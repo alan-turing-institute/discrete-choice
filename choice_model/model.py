@@ -26,6 +26,10 @@ class ChoiceModel(object):
         # Ensure all choices have an availability variable
         self.check_availability()
 
+        # Ensure that there are enough intercepts (one fewer than the number of
+        # choices)
+        self.check_intercepts()
+
         # Load data
         self.load_data()
 
@@ -99,6 +103,12 @@ class ChoiceModel(object):
             if choice not in self.availability:
                 raise UndefinedAvailability(choice)
 
+    def _check_intercepts(self):
+        n_intercepts = len(self.intercepts)
+        n_required = len(self.choices) - 1
+        if n_intercepts != n_required:
+            raise IncorrectNumberOfIntercepts(n_intercepts, n_required)
+
 
 class MultinomialLogit(ChoiceModel):
     """
@@ -144,4 +154,15 @@ class MissingField(Exception):
             'Field "{}" not present in data file "{}"'.format(
                 field,
                 data_file)
+            )
+
+
+class IncorrectNumberOfIntercepts(Exception):
+    """
+    Exception for when the number of declared intercepts is incompatible
+    """
+    def __init__(self, number, required_number):
+        super().__init__(
+            'Number of intercepts defined ({}) != number required ({})'.format(
+                number, required_number)
             )
