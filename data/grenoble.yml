@@ -1,5 +1,4 @@
 title: Grenoble Transport Survey
-data: grenoble.csv
 
 choices:
   - public_transport

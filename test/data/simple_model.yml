@@ -1,5 +1,4 @@
 title: Simple model
-data: data/simple.csv
 
 choices:
   - choice1

@@ -11,11 +11,10 @@ class ChoiceModel(object):
     Parent class for choice models
     """
 
-    def __init__(self, title, data_file, choices, choice_column,
-                 availability, variables, intercepts, parameters):
+    def __init__(self, title, choices, choice_column, availability, variables,
+                 intercepts, parameters):
 
         self.title = title
-        self.data_file = data_file
         self.choices = choices
         self.choice_column = choice_column
         self.availability = availability
@@ -29,9 +28,6 @@ class ChoiceModel(object):
         # Ensure that there are enough intercepts (one fewer than the number of
         # choices)
         self._check_intercepts()
-
-        # Load data
-        self.load_data()
 
     @classmethod
     def from_yaml(cls, stream):
@@ -48,7 +44,6 @@ class ChoiceModel(object):
         model_dict = yaml.load(stream)
 
         title = cls._copy_yaml_record('title', model_dict, stream)
-        data_file = cls._copy_yaml_record('data', model_dict, stream)
         choices = cls._copy_yaml_record('choices', model_dict, stream)
         choice_column = cls._copy_yaml_record('choice_column', model_dict,
                                               stream)
@@ -58,8 +53,8 @@ class ChoiceModel(object):
         intercepts = cls._copy_yaml_record('intercepts', model_dict, stream)
         parameters = cls._copy_yaml_record('parameters', model_dict, stream)
 
-        return cls(title, data_file, choices, choice_column,
-                   availability, variables, intercepts, parameters)
+        return cls(title, choices, choice_column, availability, variables,
+                   intercepts, parameters)
 
     @staticmethod
     def _copy_yaml_record(key, yaml_dict, stream):
@@ -68,12 +63,14 @@ class ChoiceModel(object):
         else:
             raise MissingYamlKey(key, stream)
 
-    def load_data(self):
+    def load_data(self, stream):
         """
         Load data into pandas dataframe.
+
+        Args:
+            stream (stream): csv data stream containing model data
         """
-        with open(self.data_file, 'r') as data_file:
-            self.data = pd.read_csv(data_file)
+        self.data = pd.read_csv(stream)
 
         # Ensure that all required fields are defined in the dataframe
         self._check_fields()

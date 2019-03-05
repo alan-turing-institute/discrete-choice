@@ -8,9 +8,17 @@ add_project_path()
 
 @pytest.fixture(scope="class")
 def simple_model():
-    print(data_dir)
-    with open(data_dir+'simple_model.yml') as yaml_file:
+    with open(data_dir+'simple_model.yml', 'r') as yaml_file:
         return choice_model.ChoiceModel.from_yaml(yaml_file)
+
+
+@pytest.fixture(scope="class")
+def simple_model_with_data():
+    with open(data_dir+'simple_model.yml', 'r') as yaml_file,\
+            open(data_dir+'simple.csv', 'r') as data_file:
+        model = choice_model.ChoiceModel.from_yaml(yaml_file)
+        model.load_data(data_file)
+        return model
 
 
 class TestChoiceModel():
@@ -18,8 +26,8 @@ class TestChoiceModel():
         model = simple_model
         assert model.title == 'Simple model'
 
-    def test_model_data(self, simple_model):
-        model = simple_model
+    def test_model_data(self, simple_model_with_data):
+        model = simple_model_with_data
         assert all(model.data == pandas.read_csv(data_dir+'simple.csv'))
 
     def test_model_choices(self, simple_model):
