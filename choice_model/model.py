@@ -127,7 +127,7 @@ class MissingYamlKey(Exception):
     def __init__(self, key, stream):
         super().__init__(
             'Required key "{}" missing in file "{}"'.format(key,
-                                                            stream.file)
+                                                            stream.name)
             )
 
 
@@ -138,7 +138,7 @@ class UndefinedAvailability(Exception):
     def __init__(self, choice, stream):
         super().__init__(
             'Availability variable for choice "{}" not defined'.format(
-                choice, stream.file)
+                choice, stream.name)
             )
 
 
