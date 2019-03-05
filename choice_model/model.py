@@ -13,6 +13,27 @@ class ChoiceModel(object):
 
     def __init__(self, title, choices, choice_column, availability, variables,
                  intercepts, parameters):
+        """
+        Choice model constructor
+
+        Args:
+            title (str): Title for the problem described by the model object
+            choices (list[str]): Labels for the possible choices/alternatives
+                in the model
+            choice_column (str): Label of the column in the data file which
+                will contain the choices for each record
+            availability (dict): A dictionary of labels of the columns defining
+                the availability of each choice. Keys are the names of each
+                choice and the corresponding values are the column labels.
+            variables (list[str]): A list of variable names used in utility
+                specifications.
+            intercepts (dict): A dictionary of intercept variables. The keys
+                are the choices to which the intercepts correspond and the
+                values are labels for the intercepts. There must be one fewer
+                intercept than the number of choices.
+            parameters (list[str]): Names of all parameters (except intercepts)
+                used in defining the utlity specifications.
+        """
 
         self.title = title
         self.choices = choices
