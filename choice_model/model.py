@@ -24,11 +24,11 @@ class ChoiceModel(object):
         self.parameters = parameters
 
         # Ensure all choices have an availability variable
-        self.check_availability()
+        self._check_availability()
 
         # Ensure that there are enough intercepts (one fewer than the number of
         # choices)
-        self.check_intercepts()
+        self._check_intercepts()
 
         # Load data
         self.load_data()
