@@ -24,9 +24,7 @@ class ChoiceModel(object):
         self.parameters = parameters
 
         # Ensure all choices have an availability variable
-        for choice in choices:
-            if choice not in self.availability:
-                raise UndefinedAvailability(choice)
+        self.check_availability()
 
         # Load data
         self.load_data()
@@ -95,6 +93,11 @@ class ChoiceModel(object):
         for variable in self.variables:
             if variable not in dataframe_columns:
                 raise MissingField(variable, self.data_file)
+
+    def _check_availability(self):
+        for choice in self.choices:
+            if choice not in self.availability:
+                raise UndefinedAvailability(choice)
 
 
 class MultinomialLogit(ChoiceModel):
