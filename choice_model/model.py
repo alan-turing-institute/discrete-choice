@@ -73,9 +73,9 @@ class ChoiceModel(object):
         self.data = pd.read_csv(stream)
 
         # Ensure that all required fields are defined in the dataframe
-        self._check_fields()
+        self._check_fields(stream)
 
-    def _check_fields(self):
+    def _check_fields(self, stream):
         """
         Ensures all required field are present in the pandas dataframe.
         """
@@ -83,17 +83,17 @@ class ChoiceModel(object):
 
         # Ensure choice column is present
         if self.choice_column not in dataframe_columns:
-            raise MissingField(self.choice_column, self.data_file)
+            raise MissingField(self.choice_column, stream)
 
         # Ensure all availability variables are present
         for availability in self.availability.values():
             if availability not in dataframe_columns:
-                raise MissingField(availability, self.data_file)
+                raise MissingField(availability, stream)
 
         # Ensure all variables are present
         for variable in self.variables:
             if variable not in dataframe_columns:
-                raise MissingField(variable, self.data_file)
+                raise MissingField(variable, stream)
 
     def _check_availability(self):
         for choice in self.choices:
@@ -145,11 +145,11 @@ class MissingField(Exception):
     """
     Exception for missing field in the data file
     """
-    def __init__(self, field, data_file):
+    def __init__(self, field, stream):
         super().__init__(
             'Field "{}" not present in data file "{}"'.format(
                 field,
-                data_file)
+                stream.name)
             )
 
 
