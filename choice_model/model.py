@@ -45,48 +45,26 @@ class ChoiceModel(object):
         """
         model_dict = yaml.load(stream)
 
-        if 'title' in model_dict:
-            title = model_dict['title']
-        else:
-            raise MissingYamlKey('title', stream)
-
-        if 'data' in model_dict:
-            data_file = model_dict['data']
-        else:
-            raise MissingYamlKey('data', stream)
-
-        if 'choices' in model_dict:
-            choices = model_dict['choices']
-        else:
-            raise MissingYamlKey('choices', stream)
-
-        if 'choice_column' in model_dict:
-            choice_column = model_dict['choice_column']
-        else:
-            raise MissingYamlKey('choice_column', stream)
-
-        if 'availability' in model_dict:
-            availability = model_dict['availability']
-        else:
-            raise MissingYamlKey('availability', stream)
-
-        if 'variables' in model_dict:
-            variables = model_dict['variables']
-        else:
-            raise MissingYamlKey('variables', stream)
-
-        if 'intercepts' in model_dict:
-            intercepts = model_dict['intercepts']
-        else:
-            raise MissingYamlKey('intercepts', stream)
-
-        if 'parameters' in model_dict:
-            parameters = model_dict['parameters']
-        else:
-            raise MissingYamlKey('parameters', stream)
+        title = cls._copy_yaml_record('title', model_dict, stream)
+        data_file = cls._copy_yaml_record('data', model_dict, stream)
+        choices = cls._copy_yaml_record('choices', model_dict, stream)
+        choice_column = cls._copy_yaml_record('choice_column', model_dict,
+                                              stream)
+        availability = cls._copy_yaml_record('availability', model_dict,
+                                             stream)
+        variables = cls._copy_yaml_record('variables', model_dict, stream)
+        intercepts = cls._copy_yaml_record('intercepts', model_dict, stream)
+        parameters = cls._copy_yaml_record('parameters', model_dict, stream)
 
         return cls(title, data_file, choices, choice_column,
                    availability, variables, intercepts, parameters)
+
+    @staticmethod
+    def _copy_yaml_record(key, yaml_dict, stream):
+        if key in yaml_dict:
+            return yaml_dict[key]
+        else:
+            raise MissingYamlKey(key, stream)
 
     def load_data(self):
         """
