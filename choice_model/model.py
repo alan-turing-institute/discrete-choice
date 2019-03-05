@@ -135,10 +135,9 @@ class UndefinedAvailability(Exception):
     """
     Exception for an undefined availability variable.
     """
-    def __init__(self, choice, stream):
+    def __init__(self, choice):
         super().__init__(
-            'Availability variable for choice "{}" not defined'.format(
-                choice, stream.name)
+            'Availability variable for choice "{}" not defined'.format(choice)
             )
 
 
