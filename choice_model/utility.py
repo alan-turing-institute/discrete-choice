@@ -33,11 +33,14 @@ class Utility(object):
         # Remove padding spaces
         terms = [term.strip() for term in terms]
 
-        # Seperate intercept from other terms
-        # self.intercept, *terms = terms
-        self.intercept, terms = terms[0], terms[1:]
-        if self.intercept != intercept:
-            raise MissingOrIncorrectIntercept(self.intercept, intercept)
+        if intercept is None:
+            self.intercept = None
+        else:
+            # Seperate intercept from other terms
+            # self.intercept, *terms = terms
+            self.intercept, terms = terms[0], terms[1:]
+            if self.intercept != intercept:
+                raise MissingOrIncorrectIntercept(self.intercept, intercept)
 
         # Parse terms
         self.terms = []
@@ -152,6 +155,12 @@ class Utility(object):
         duplicates = [key for key, value in counter.items() if value > 1]
         if duplicates != []:
             raise DuplicateParameters(duplicates)
+
+    def __eq__(self, other):
+        if self.intercept == other.intercept and self.terms == other.terms:
+            return True
+        else:
+            return False
 
 
 class MissingOrIncorrectIntercept(Exception):
