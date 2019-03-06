@@ -5,7 +5,7 @@ import pytest
 add_project_path()
 
 
-@pytest.fixture(scope="class")
+@pytest.fixture(scope='class')
 def simple_utility():
     utility_string = 'c + var1*param1 + param2*var2'
     variables = ['var1', 'var2']
@@ -14,6 +14,14 @@ def simple_utility():
 
     return choice_model.Utility(utility_string, variables, intercept,
                                 parameters)
+
+
+@pytest.fixture(scope='module')
+def custom_utility():
+    def _custom_utility(utility_string, variables, intercept, parameters):
+        return choice_model.Utility(utility_string, variables, intercept,
+                                    parameters)
+    return _custom_utility
 
 
 class TestSimpleUtility():
@@ -28,3 +36,23 @@ class TestSimpleUtility():
     def test_parameters(self, simple_utility):
         utility = simple_utility
         assert utility.parameters() == ['param1', 'param2']
+
+
+class TestDuplicates():
+    def test_duplicate_parameters(self, custom_utility):
+        with pytest.raises(choice_model.DuplicateParameters):
+            custom_utility(
+                utility_string='c + var1*param1 + param1*var2',
+                variables=['var1', 'var2'],
+                intercept='c',
+                parameters=['param1', 'param2']
+                )
+
+    def test_duplicate_variables(self, custom_utility):
+        with pytest.raises(choice_model.DuplicateVariables):
+            custom_utility(
+                utility_string='c + var2*param1 + param2*var2',
+                variables=['var1', 'var2'],
+                intercept='c',
+                parameters=['param1', 'param2']
+                )

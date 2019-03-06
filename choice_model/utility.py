@@ -2,7 +2,7 @@
 Utility function specification
 """
 
-from collections import namedtuple
+from collections import namedtuple, Counter
 
 VariableAndParameter = namedtuple('VariableAndParameter',
                                   ['variable', 'parameter'])
@@ -46,6 +46,9 @@ class Utility(object):
                     self._sort_variable_and_parameter(variable_and_parameter,
                                                       variables, parameters)
                     )
+
+        # Ensure all variables and parameters appear at most once
+        self._check_duplicates()
 
     @staticmethod
     def _split_term(term):
@@ -131,6 +134,23 @@ class Utility(object):
         """
         return [term.parameter for term in self.terms]
 
+    def _check_duplicates(self):
+        """
+        Ensure there are no duplicate parameters or variables in the utility
+        definition
+        """
+        # check variables
+        counter = Counter(self.variables())
+        duplicates = [key for key, value in counter.items() if value > 1]
+        if duplicates != []:
+            raise DuplicateVariables(duplicates)
+
+        # check parameters
+        counter = Counter(self.parameters())
+        duplicates = [key for key, value in counter.items() if value > 1]
+        if duplicates != []:
+            raise DuplicateParameters(duplicates)
+
 
 class TermNotProduct(Exception):
     """
@@ -154,4 +174,26 @@ class InvalidTermContents(Exception):
             'Each non-intercept term in a utility definition must be a product'
             ' of a parameter and a variable. The offending labels are "{}"'
             ' and "{}"'.format(a, b)
+            )
+
+
+class DuplicateVariables(Exception):
+    """
+    Exception for duplicate parameters in a utility definition.
+    """
+    def __init__(self, variables):
+        super().__init__(
+            'Variable/s "{}" used more than once in a utility'
+            ' definition'.format(variables)
+            )
+
+
+class DuplicateParameters(Exception):
+    """
+    Exception for duplicate variables in a utility definition.
+    """
+    def __init__(self, parameters):
+        super().__init__(
+            'Parameter/s "{}" used more than once in a utility'
+            ' definition'.format(parameters)
             )
