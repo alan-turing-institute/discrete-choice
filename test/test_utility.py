@@ -56,3 +56,32 @@ class TestDuplicates():
                 intercept='c',
                 parameters=['param1', 'param2']
                 )
+
+
+class TestIntercept():
+    def test_incorrect_intercept(self, custom_utility):
+        with pytest.raises(choice_model.MissingOrIncorrectIntercept):
+            custom_utility(
+                utility_string='d + var2*param1 + param2*var1',
+                variables=['var1', 'var2'],
+                intercept='c',
+                parameters=['param1', 'param2']
+                )
+
+    def test_missing_intercept(self, custom_utility):
+        with pytest.raises(choice_model.MissingOrIncorrectIntercept):
+            custom_utility(
+                utility_string='var2*param1 + param2*var1',
+                variables=['var1', 'var2'],
+                intercept='c',
+                parameters=['param1', 'param2']
+                )
+
+    def test_mislocated_intercept(self, custom_utility):
+        with pytest.raises(choice_model.MissingOrIncorrectIntercept):
+            custom_utility(
+                utility_string='var2*param1 + c + param2*var1',
+                variables=['var1', 'var2'],
+                intercept='c',
+                parameters=['param1', 'param2']
+                )

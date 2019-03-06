@@ -33,19 +33,21 @@ class Utility(object):
         # Remove padding spaces
         terms = [term.strip() for term in terms]
 
+        # Seperate intercept from other terms
+        # self.intercept, *terms = terms
+        self.intercept, terms = terms[0], terms[1:]
+        if self.intercept != intercept:
+            raise MissingOrIncorrectIntercept(self.intercept, intercept)
+
         # Parse terms
         self.terms = []
         for term in terms:
-            # Check if term is intercept
-            if term == intercept:
-                self.intercept = term
             # identify variable and parameter
-            else:
-                variable_and_parameter = self._split_term(term)
-                self.terms.append(
-                    self._sort_variable_and_parameter(variable_and_parameter,
-                                                      variables, parameters)
-                    )
+            variable_and_parameter = self._split_term(term)
+            self.terms.append(
+                self._sort_variable_and_parameter(variable_and_parameter,
+                                                  variables, parameters)
+                )
 
         # Ensure all variables and parameters appear at most once
         self._check_duplicates()
@@ -150,6 +152,18 @@ class Utility(object):
         duplicates = [key for key, value in counter.items() if value > 1]
         if duplicates != []:
             raise DuplicateParameters(duplicates)
+
+
+class MissingOrIncorrectIntercept(Exception):
+    """
+    Exception for when the first term of the utility definition is not the
+    intercept.
+    """
+    def __init__(self, intercept, actual):
+        super().__init__(
+            'The first term of the utility definition "{}" is not the'
+            ' specified intercept "{}"'.format(intercept, actual)
+            )
 
 
 class TermNotProduct(Exception):
