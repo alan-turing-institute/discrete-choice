@@ -23,10 +23,8 @@ class TestSimpleUtility():
 
     def test_variables(self, simple_utility):
         utility = simple_utility
-        variables = [term.variable for term in utility.terms]
-        assert variables == ['var1', 'var2']
+        assert utility.variables() == ['var1', 'var2']
 
     def test_parameters(self, simple_utility):
         utility = simple_utility
-        parameters = [term.parameter for term in utility.terms]
-        assert parameters == ['param1', 'param2']
+        assert utility.parameters() == ['param1', 'param2']

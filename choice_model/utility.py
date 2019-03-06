@@ -113,6 +113,24 @@ class Utility(object):
         else:
             raise InvalidTermContents(a, b)
 
+    def variables(self):
+        """
+        Produce a list of variables in the utility definition
+
+        Returns:
+            list[str]: a list of the variable labels
+        """
+        return [term.variable for term in self.terms]
+
+    def parameters(self):
+        """
+        Produce a list of parameters in the utility definition
+
+        Returns:
+            list[str]: a list of the parameter labels
+        """
+        return [term.parameter for term in self.terms]
+
 
 class TermNotProduct(Exception):
     """
