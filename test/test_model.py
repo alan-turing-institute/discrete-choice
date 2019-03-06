@@ -44,7 +44,7 @@ class TestChoiceModel():
 
     def test_model_intercepts(self, simple_model):
         model = simple_model
-        assert model.intercepts == {'var1': 'cchoice1'}
+        assert model.intercepts == {'choice1': 'cchoice1'}
 
     def test_model_parameters(self, simple_model):
         model = simple_model
