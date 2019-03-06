@@ -1,5 +1,5 @@
 """
-Choice model definitions
+Choice model definitions.
 """
 
 import pandas as pd
@@ -8,13 +8,13 @@ import yaml
 
 class ChoiceModel(object):
     """
-    Parent class for choice models
+    Parent class for choice models.
     """
 
     def __init__(self, title, choices, choice_column, availability, variables,
                  intercepts, parameters):
         """
-        Choice model constructor
+        Choice model constructor.
 
         Args:
             title (str): Title for the problem described by the model object
@@ -53,14 +53,27 @@ class ChoiceModel(object):
     @classmethod
     def from_yaml(cls, stream):
         """
-        Read the model definition from a YAML file
+        Read the model definition from a YAML file.
 
         Args:
-            stream (stream): Data stream of the model definition
+            stream (stream): Data stream of the model definition.
 
         Returns:
-            model (ChoiceModel): A choice model object corresponding to the
-                definition in the stream
+            (ChoiceModel): A choice model object corresponding to the
+                definition in the stream.
+        """
+        return cls(*cls._unpack_yaml(stream))
+
+    @classmethod
+    def _unpack_yaml(cls, stream):
+        """
+        Unpack constructor arguments for model definition from a YAML file.
+
+        Args:
+            stream (stream): Data stream of the model definition.
+
+        Returns:
+            (tuple): A tuple of the arguments requiredby the constructor.
         """
         model_dict = yaml.load(stream)
 
@@ -74,11 +87,26 @@ class ChoiceModel(object):
         intercepts = cls._copy_yaml_record('intercepts', model_dict, stream)
         parameters = cls._copy_yaml_record('parameters', model_dict, stream)
 
-        return cls(title, choices, choice_column, availability, variables,
-                   intercepts, parameters)
+        return (title, choices, choice_column, availability, variables,
+                intercepts, parameters)
 
     @staticmethod
     def _copy_yaml_record(key, yaml_dict, stream):
+        """
+        Extract the value of a key from the YAML dictionary if it exists, raise
+        an exception otherwise.
+
+        Args:
+            key (str): The key to search for in the dictionary.
+            yaml_dict (dict): The dictionary to search for key.
+            stream (stream): The YAML data stream.
+
+        Returns:
+            (object): The value corresponding to key in yaml_dict.
+
+        Raises:
+            MissingYamlKey: Raised if key is not in yaml_dict.
+        """
         if key in yaml_dict:
             return yaml_dict[key]
         else:
@@ -89,7 +117,7 @@ class ChoiceModel(object):
         Load data into pandas dataframe.
 
         Args:
-            stream (stream): csv data stream containing model data
+            stream (stream): csv data stream containing model data.
         """
         self.data = pd.read_csv(stream)
 
@@ -133,12 +161,14 @@ class MultinomialLogit(ChoiceModel):
     Multinomial logit choice model class
     """
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, title, choices, choice_column, availability, variables,
+                 intercepts, parameters):
+        super().__init__(title, choices, choice_column, availability,
+                         variables, intercepts, parameters)
 
     @classmethod
-    def from_yaml(self, stream):
-        super().__init__()
+    def from_yaml(cls, stream):
+        return cls(*super()._unpack_yaml(stream))
 
 
 class MissingYamlKey(Exception):
