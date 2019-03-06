@@ -3,6 +3,7 @@ Choice model definitions.
 """
 
 import pandas as pd
+from .utility import Utility
 import yaml
 
 
@@ -155,18 +156,31 @@ class ChoiceModel(object):
 
 class MultinomialLogit(ChoiceModel):
     """
-    Multinomial logit choice model class
+    Multinomial logit choice model class.
     """
-
     def __init__(self, title, choices, choice_column, availability, variables,
-                 intercepts, parameters):
+                 intercepts, parameters, specification):
         super().__init__(title, choices, choice_column, availability,
                          variables, intercepts, parameters)
+
+        # Create utility definitions
+        self.specification = {}
+        for choice in self.choices:
+            if choice in self.intercepts:
+                intercept = self.intercepts[choice]
+            else:
+                intercept = None
+            self.specification[choice] = Utility(specification[choice],
+                                                 self.variables,
+                                                 intercept,
+                                                 self.parameters)
 
     @classmethod
     def from_yaml(cls, stream):
         model_dict = yaml.load(stream)
-        return cls(*super()._unpack_yaml(model_dict))
+        specification = cls._copy_yaml_record('specification', model_dict)
+
+        return cls(*super()._unpack_yaml(model_dict), specification)
 
 
 class MissingYamlKey(Exception):

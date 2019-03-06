@@ -75,3 +75,38 @@ def test_missing_field():
                 open(data_dir+'missing_field.csv', 'r') as data_file:
             model = choice_model.ChoiceModel.from_yaml(yaml_file)
             model.load_data(data_file)
+
+
+@pytest.fixture(scope='class')
+def simple_multinomial_model():
+    with open(data_dir+'simple_model.yml', 'r') as yaml_file:
+        return choice_model.MultinomialLogit.from_yaml(yaml_file)
+
+
+@pytest.fixture(scope='class')
+def simple_multinomial_utilities():
+    utility_string1 = 'cchoice1 + p1* var1 + p2*var2'
+    utility_string2 = 'p1* var3 + p2*var4'
+    variables = ['var1', 'var2', 'var3', 'var4']
+    intercept = 'cchoice1'
+    parameters = ['p1', 'p2']
+
+    u1 = choice_model.Utility(utility_string1, variables, intercept,
+                              parameters)
+    u2 = choice_model.Utility(utility_string2, variables, None, parameters)
+
+    return u1, u2
+
+
+class TestMultinomialLogit():
+    def test_specification1(self, simple_multinomial_model,
+                            simple_multinomial_utilities):
+        model = simple_multinomial_model
+        u1, u2 = simple_multinomial_utilities
+        assert model.specification['choice1'] == u1
+
+    def test_specification2(self, simple_multinomial_model,
+                            simple_multinomial_utilities):
+        model = simple_multinomial_model
+        u1, u2 = simple_multinomial_utilities
+        assert model.specification['choice2'] == u2
