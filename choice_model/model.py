@@ -62,36 +62,33 @@ class ChoiceModel(object):
             (ChoiceModel): A choice model object corresponding to the
                 definition in the stream.
         """
-        return cls(*cls._unpack_yaml(stream))
+        model_dict = yaml.load(stream)
+        return cls(*cls._unpack_yaml(model_dict))
 
     @classmethod
-    def _unpack_yaml(cls, stream):
+    def _unpack_yaml(cls, model_dict):
         """
-        Unpack constructor arguments for model definition from a YAML file.
+        Unpack constructor arguments for model definition a YAML dictionary.
 
         Args:
-            stream (stream): Data stream of the model definition.
+            model_dict (dict): Dictionary of model definition.
 
         Returns:
             (tuple): A tuple of the arguments requiredby the constructor.
         """
-        model_dict = yaml.load(stream)
-
-        title = cls._copy_yaml_record('title', model_dict, stream)
-        choices = cls._copy_yaml_record('choices', model_dict, stream)
-        choice_column = cls._copy_yaml_record('choice_column', model_dict,
-                                              stream)
-        availability = cls._copy_yaml_record('availability', model_dict,
-                                             stream)
-        variables = cls._copy_yaml_record('variables', model_dict, stream)
-        intercepts = cls._copy_yaml_record('intercepts', model_dict, stream)
-        parameters = cls._copy_yaml_record('parameters', model_dict, stream)
+        title = cls._copy_yaml_record('title', model_dict)
+        choices = cls._copy_yaml_record('choices', model_dict)
+        choice_column = cls._copy_yaml_record('choice_column', model_dict)
+        availability = cls._copy_yaml_record('availability', model_dict)
+        variables = cls._copy_yaml_record('variables', model_dict)
+        intercepts = cls._copy_yaml_record('intercepts', model_dict)
+        parameters = cls._copy_yaml_record('parameters', model_dict)
 
         return (title, choices, choice_column, availability, variables,
                 intercepts, parameters)
 
     @staticmethod
-    def _copy_yaml_record(key, yaml_dict, stream):
+    def _copy_yaml_record(key, yaml_dict):
         """
         Extract the value of a key from the YAML dictionary if it exists, raise
         an exception otherwise.
@@ -110,7 +107,7 @@ class ChoiceModel(object):
         if key in yaml_dict:
             return yaml_dict[key]
         else:
-            raise MissingYamlKey(key, stream)
+            raise MissingYamlKey(key)
 
     def load_data(self, stream):
         """
@@ -168,17 +165,17 @@ class MultinomialLogit(ChoiceModel):
 
     @classmethod
     def from_yaml(cls, stream):
-        return cls(*super()._unpack_yaml(stream))
+        model_dict = yaml.load(stream)
+        return cls(*super()._unpack_yaml(model_dict))
 
 
 class MissingYamlKey(Exception):
     """
     Exception for missing, required YAML keys.
     """
-    def __init__(self, key, stream):
+    def __init__(self, key):
         super().__init__(
-            'Required key "{}" missing in file "{}"'.format(key,
-                                                            stream.name)
+            'Required key "{}" missing'.format(key)
             )
 
 
