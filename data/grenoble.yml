@@ -1,0 +1,63 @@
+title: Grenoble Transport Survey
+
+choices:
+  - public_transport
+  - car
+  - cycle
+  - walk
+  - passenger
+choice_column: mode
+
+availability:
+  public_transport: avail_public_transport
+  car: avail_car
+  cycle: avail_cycle
+  walk: avail_walk
+  passenger: avail_passenger
+
+variables:
+  - head_of_household
+  - transit_walk_time
+  - car_competition
+  - has_car
+  - female
+  - central_zone
+  - manual_worker
+  - public_transport_time
+  - car_time
+  - cycle_time
+  - walk_time
+  - public_transport_cost
+  - car_cost
+  - cycle_non_linear
+  - walk_non_linear
+
+intercepts:
+  public_transport: cpt
+  cycle: ccycle
+  walk: cwalk
+  passenger: cpass
+parameters:
+  - ptime
+  - pcost
+  - pnon-linear
+  - phead_of_household
+  - porigin_walk
+  - pcar_competition
+  - pfemale_cycle
+  - pcentral_zone
+  - pmanual_worker
+  - phas_car
+  - pfemale_passenger
+
+specification:
+  public_transport:
+    cpt + ptime*public_transport_time + pcost*public_transport_cost + phead_of_household*head_of_household + porigin_walk*transit_walk_time
+  car:
+    ptime*car_time + pcost*car_cost + pcar_competition*car_competition
+  cycle:
+    ccycle + ptime*cycle_time + pnon-linear*cycle_non_linear + pfemale_cycle*female + pcentral_zone*central_zone + pmanual_worker*manual_worker
+  walk:
+    cwalk + ptime*walk_time + pnon-linear*walk_non_linear
+  passenger:
+    cpass + ptime*car_time + phas_car*has_car + pfemale_passenger*female

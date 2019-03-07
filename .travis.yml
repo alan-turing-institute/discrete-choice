@@ -1,0 +1,13 @@
+language: python
+
+dist: xenial
+
+python:
+  - 3.6
+  - 3.7
+
+before_script:
+  cd test
+
+script:
+  pytest -v
