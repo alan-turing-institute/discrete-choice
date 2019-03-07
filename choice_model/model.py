@@ -191,6 +191,25 @@ class ChoiceModel(object):
             ]
         return choice_independent + choice_dependent
 
+    def number_of_choices(self):
+        """
+        Determine the number of choices/alternatives in the model
+        """
+        return len(self.choices)
+
+    def number_of_parameters(self, include_intercepts=True):
+        """
+        Determine the number of parameters/coefficients in the model
+
+        Args:
+            including_intercepts (bool, default=True): if True include the
+                number of intercepts in the count.
+        """
+        number_of_parameters = len(self.parameters)
+        if include_intercepts:
+            number_of_parameters += len(self.intercepts)
+        return number_of_parameters
+
 
 class MultinomialLogit(ChoiceModel):
     """

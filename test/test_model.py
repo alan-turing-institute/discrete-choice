@@ -55,6 +55,18 @@ class TestChoiceModel():
         model = simple_model
         assert model.parameters == ['p1', 'p2']
 
+    def test_number_of_choices(self, simple_model):
+        model = simple_model
+        assert model.number_of_choices() == 2
+
+    def test_number_of_parameters(self, simple_model):
+        model = simple_model
+        assert model.number_of_parameters() == 3
+
+    def test_number_of_parameters_excluding_intercepts(self, simple_model):
+        model = simple_model
+        assert model.number_of_parameters(include_intercepts=False) == 2
+
 
 def test_missing_yaml_key():
     with pytest.raises(choice_model.model.MissingYamlKey):
