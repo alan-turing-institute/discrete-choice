@@ -40,7 +40,12 @@ class TestChoiceModel():
 
     def test_model_variables(self, simple_model):
         model = simple_model
-        assert model.variables == ['var1', 'var2', 'var3', 'var4']
+        assert model.all_variables() == ['var1', 'var2', 'var3']
+
+    def test_model_variables_fields(self, simple_model):
+        model = simple_model
+        assert model.all_variable_fields() == ['var1', 'var2', 'choice1_var3',
+                                               'choice2_var3']
 
     def test_model_intercepts(self, simple_model):
         model = simple_model
@@ -85,9 +90,9 @@ def simple_multinomial_model():
 
 @pytest.fixture(scope='class')
 def simple_multinomial_utilities():
-    utility_string1 = 'cchoice1 + p1* var1 + p2*var2'
-    utility_string2 = 'p1* var3 + p2*var4'
-    variables = ['var1', 'var2', 'var3', 'var4']
+    utility_string1 = 'cchoice1 + p1* var1 + p2*var3'
+    utility_string2 = 'p1* var2 + p2*var3'
+    variables = ['var1', 'var2', 'var3']
     intercept = 'cchoice1'
     parameters = ['p1', 'p2']
 
