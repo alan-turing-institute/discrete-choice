@@ -143,6 +143,15 @@ class PylogitInterface(Interface):
                 names=self.names,
                 model_type='MNL')
 
+    def estimate(self, method='BFGS'):
+        """
+        Estimate the parameters of the choice model.
+        """
+        initial_parameters = np.zeros(self.model.number_of_parameters())
+        self.pylogit_model.fit_mle(
+            init_vals=initial_parameters,
+            method=method)
+
 
 class NoDataLoaded(Exception):
     """

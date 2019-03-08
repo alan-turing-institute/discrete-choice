@@ -116,3 +116,10 @@ class TestPylogitNames():
                        variable, names):
         interface = simple_multinomial_pylogit_interface
         assert interface.names[variable] == [names]
+
+
+class TestPylogitEstimation():
+    def test_estimation(self, simple_multinomial_pylogit_interface):
+        interface = simple_multinomial_pylogit_interface
+        interface.estimate()
+        assert 0

@@ -20,3 +20,10 @@ class Interface(object):
                     [model_class.__name__ for model_class in cls._valid_models]
                     )
                 )
+
+    def estimate(self):
+        """
+        Estimate the parameters of the choice model.
+        """
+        raise NotImplementedError(
+            'estimate has not been implemented in this class')
