@@ -139,8 +139,14 @@ class TestPylogitEstimation():
         assert (interface.pylogit_model.__getattribute__(attribute)
                 == pytest.approx(value, 1.0e-5))
 
-    #              parameters       std_err  ...  robust_t_stats  robust_p_values
-    #              cchoice1   12.318752           NaN  ...        8.939518     3.908719e-19
-    #              p1        -10.433292  3.860658e+06  ...      -33.784293    3.354805e-250
-    #              p2         -1.885460  3.860657e+06  ...      -36.411032    2.848025e-290
-    #              p3        -12.318752           NaN  ...      -27.419407    1.610009e-165
+    @pytest.mark.parametrize('parameter,value', [
+        ('cchoice1', 12.318752),
+        ('p1', -10.433292),
+        ('p2', -1.885460),
+        ('p3', -12.318752)
+        ])
+    def test_optimised_paramters(self, simple_multinomial_pylogit_estimation,
+                                 parameter, value):
+        interface = simple_multinomial_pylogit_estimation
+        parameters = interface.pylogit_model.params
+        assert parameters[parameter] == pytest.approx(value)
