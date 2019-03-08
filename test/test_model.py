@@ -53,7 +53,7 @@ class TestChoiceModel():
 
     def test_model_parameters(self, simple_model):
         model = simple_model
-        assert model.parameters == ['p1', 'p2']
+        assert model.parameters == ['p1', 'p2', 'p3']
 
     def test_number_of_choices(self, simple_model):
         model = simple_model
@@ -61,11 +61,11 @@ class TestChoiceModel():
 
     def test_number_of_parameters(self, simple_model):
         model = simple_model
-        assert model.number_of_parameters() == 3
+        assert model.number_of_parameters() == 4
 
     def test_number_of_parameters_excluding_intercepts(self, simple_model):
         model = simple_model
-        assert model.number_of_parameters(include_intercepts=False) == 2
+        assert model.number_of_parameters(include_intercepts=False) == 3
 
 
 def test_missing_yaml_key():
@@ -102,11 +102,11 @@ def simple_multinomial_model():
 
 @pytest.fixture(scope='class')
 def simple_multinomial_utilities():
-    utility_string1 = 'cchoice1 + p1* var1 + p2*var3'
-    utility_string2 = 'p1* var2 + p2*var3'
+    utility_string1 = 'cchoice1 + p1* var1 + p3*var3'
+    utility_string2 = 'p2* var2 + p3*var3'
     variables = ['var1', 'var2', 'var3']
     intercept = 'cchoice1'
-    parameters = ['p1', 'p2']
+    parameters = ['p1', 'p2', 'p3']
 
     u1 = choice_model.Utility(utility_string1, variables, intercept,
                               parameters)

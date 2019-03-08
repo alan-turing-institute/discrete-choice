@@ -22,9 +22,10 @@ intercepts:
 parameters:
   - p1
   - p2
+  - p3
 
 specification:
   choice1:
-    cchoice1 + p1*var1 + p2*var3
+    cchoice1 + p1*var1 + p3*var3
   choice2:
-    p1*var2 + p2*var3
+    p2*var2 + p3*var3

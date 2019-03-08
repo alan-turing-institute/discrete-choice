@@ -109,8 +109,8 @@ class TestPylogitNames():
 
     @pytest.mark.parametrize('variable,names', [
         ('var1', 'p1'),
-        ('var2', 'p1'),
-        ('var3', 'p2')
+        ('var2', 'p2'),
+        ('var3', 'p3')
         ])
     def test_variables(self, simple_multinomial_pylogit_interface,
                        variable, names):
@@ -118,8 +118,29 @@ class TestPylogitNames():
         assert interface.names[variable] == [names]
 
 
+@pytest.fixture(scope="module")
+def simple_multinomial_pylogit_estimation(simple_multinomial_model_with_data):
+    interface = choice_model.PylogitInterface(
+        simple_multinomial_model_with_data)
+    interface.estimate()
+    return interface
+
+
 class TestPylogitEstimation():
-    def test_estimation(self, simple_multinomial_pylogit_interface):
-        interface = simple_multinomial_pylogit_interface
-        interface.estimate()
-        assert 0
+    @pytest.mark.parametrize('attribute,value', [
+        ('null_log_likelihood', -1.38629),
+        ('log_likelihood', -1.0627e-07),
+        ('rho_squared', 1),
+        ('rho_bar_squared', -1.88539)
+        ])
+    def test_estimation(self, simple_multinomial_pylogit_estimation,
+                        attribute, value):
+        interface = simple_multinomial_pylogit_estimation
+        assert (interface.pylogit_model.__getattribute__(attribute)
+                == pytest.approx(value, 1.0e-5))
+
+    #              parameters       std_err  ...  robust_t_stats  robust_p_values
+    #              cchoice1   12.318752           NaN  ...        8.939518     3.908719e-19
+    #              p1        -10.433292  3.860658e+06  ...      -33.784293    3.354805e-250
+    #              p2         -1.885460  3.860657e+06  ...      -36.411032    2.848025e-290
+    #              p3        -12.318752           NaN  ...      -27.419407    1.610009e-165
