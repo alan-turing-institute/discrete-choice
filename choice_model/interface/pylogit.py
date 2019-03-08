@@ -26,6 +26,7 @@ class PylogitInterface(Interface):
 
         self._convert_to_long_format()
         self._create_specification_and_names()
+        self._create_model()
 
     def _encode_choices_as_integers(self):
         """
@@ -119,6 +120,19 @@ class PylogitInterface(Interface):
 
         self.specification = specification
         self.names = names
+
+    def _create_model(self):
+        """
+        Create the pylogit model class
+        """
+        self.pylogit_model = pl.create_choice_model(
+                data=self.long_data,
+                alt_id_col='choice_id',
+                obs_id_col='observation_id',
+                choice_col='choice_bool',
+                specification=self.specification,
+                names=self.names,
+                model_type='MNL')
 
 
 class NoDataLoaded(Exception):
