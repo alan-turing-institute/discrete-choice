@@ -89,12 +89,12 @@ class TestPylogitLongData():
 class TestPylogitSpecification():
     def test_intercepts(self, simple_multinomial_pylogit_interface):
         interface = simple_multinomial_pylogit_interface
-        assert interface.specification['intercept'] == [0]
+        assert interface.specification['intercept'] == [1]
 
     @pytest.mark.parametrize('variable,specification', [
-        ('var1', [0]),
-        ('var2', [1]),
-        ('var3', [0, 1])
+        ('var1', [1]),
+        ('var2', [2]),
+        ('var3', [1, 2])
         ])
     def test_variables(self, simple_multinomial_pylogit_interface,
                        variable, specification):
