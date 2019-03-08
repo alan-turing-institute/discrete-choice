@@ -5,6 +5,7 @@ pylogit interface
 from . import Interface
 from .. import MultinomialLogit
 import numpy as np
+import pandas as pd
 import pylogit as pl
 
 
@@ -13,6 +14,11 @@ class PylogitInterface(Interface):
 
     def __init__(self, model):
         super().__init__(model)
+
+        if not isinstance(model.data, pd.DataFrame):
+            raise NoDataLoaded
+
+        self._convert_to_long_format()
 
     def _encode_choices_as_integers(self):
         """
@@ -69,3 +75,13 @@ class PylogitInterface(Interface):
         # Remove choice bool and observation_id column from wide data
         model.data.drop(columns=['choice_bool', 'observation_id'],
                         inplace=True)
+
+
+class NoDataLoaded(Exception):
+    """
+    Exception for when it is attempted to create a pylogit interface from a
+    model with no data.
+    """
+    def __init__(self):
+        super().__init__('The model must be loaded with data before creating a'
+                         ' pylogit interface')

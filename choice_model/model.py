@@ -56,6 +56,7 @@ class ChoiceModel(object):
         self.choice_dependent_variables = choice_dependent_variables
         self.intercepts = intercepts
         self.parameters = parameters
+        self.data = None
 
         # Ensure all choices have an availability variable
         self._check_availability()

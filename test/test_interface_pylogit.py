@@ -32,20 +32,21 @@ def simple_multinomial_pylogit_interface(simple_multinomial_model_with_data):
 
 
 class TestPylogitInterface():
-    def test_multinomial_logit(self, simple_multinomial_model):
-        interface = choice_model.PylogitInterface(simple_multinomial_model)
-        assert interface.model == simple_multinomial_model
+    def test_multinomial_logit(self, simple_multinomial_model_with_data):
+        interface = choice_model.PylogitInterface(
+                simple_multinomial_model_with_data)
+        assert interface.model == simple_multinomial_model_with_data
 
     def test_simple_model(self, simple_model):
         with pytest.raises(TypeError):
             choice_model.PylogitInterface(simple_model)
 
+    def test_no_data(self, simple_multinomial_model):
+        with pytest.raises(choice_model.interface.pylogit.NoDataLoaded):
+            choice_model.PylogitInterface(simple_multinomial_model)
+
 
 class TestPylogitLongData():
-    def test_long_data(self, simple_multinomial_pylogit_interface):
-        interface = simple_multinomial_pylogit_interface
-        interface._convert_to_long_format()
-
     @pytest.mark.parametrize(
         'wide_data_key,long_data_key,observation,choice', [
             ('var1', 'var1', 0, 0),
