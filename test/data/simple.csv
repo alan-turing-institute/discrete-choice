@@ -1,3 +1,3 @@
 var1,var2,choice1_var3,choice2_var3,avail_choice1,avail_choice2,alternative
-1,1,1,1,1,1,choice1
-1,1,1,1,1,1,choice2
+1,2,3,4,1,1,choice1
+5,6,7,8,1,1,choice2
