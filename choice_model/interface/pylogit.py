@@ -9,6 +9,15 @@ import numpy as np
 import pandas as pd
 import pylogit as pl
 
+# Column label for long format data indicating whether the row corresponds to
+# the choice taken by the individual
+_CHOICE_COL = 'choice_bool'
+# Column label giving the unique number of the observation in the long format
+_OBSERVATION_COL = 'observation_id'
+# Column label giving the corresponding choice (encoded as a number) for each
+# row in the long format
+_CHOICE_ID_COL = 'choice_id'
+
 
 class PylogitInterface(Interface):
     _valid_models = [MultinomialLogit]
@@ -51,7 +60,7 @@ class PylogitInterface(Interface):
         # Create a dataframe column with the integer encoding. In the long
         # format this column will be a boolean for whether this choice was made
         # or not.
-        model.data['choice_bool'] = model.data[model.choice_column].apply(
+        model.data[_CHOICE_COL] = model.data[model.choice_column].apply(
             lambda x: choice_encoding[x])
 
         return alt_specific_vars, availability_vars
@@ -64,7 +73,7 @@ class PylogitInterface(Interface):
         (alt_specific_vars,
          availability_vars) = self._encode_choices_as_integers()
         # Create observation number column as a range of integers from 1
-        self.model.data['observation_id'] = np.arange(model.data.shape[0],
+        self.model.data[_OBSERVATION_COL] = np.arange(model.data.shape[0],
                                                       dtype=int)+1
 
         # Use pylogit routine to convert to long format
@@ -73,13 +82,13 @@ class PylogitInterface(Interface):
             ind_vars=model.choice_independent_variables,
             alt_specific_vars=alt_specific_vars,
             availability_vars=availability_vars,
-            obs_id_col='observation_id',
-            choice_col='choice_bool',
-            new_alt_id_name='choice_id'
+            obs_id_col=_OBSERVATION_COL,
+            choice_col=_CHOICE_COL,
+            new_alt_id_name=_CHOICE_ID_COL
             )
 
         # Remove choice bool and observation_id column from wide data
-        model.data.drop(columns=['choice_bool', 'observation_id'],
+        model.data.drop(columns=[_CHOICE_COL, _OBSERVATION_COL],
                         inplace=True)
 
     def _create_specification_and_names(self):
@@ -127,9 +136,9 @@ class PylogitInterface(Interface):
         """
         self.pylogit_model = pl.create_choice_model(
                 data=self.long_data,
-                alt_id_col='choice_id',
-                obs_id_col='observation_id',
-                choice_col='choice_bool',
+                alt_id_col=_CHOICE_ID_COL,
+                obs_id_col=_OBSERVATION_COL,
+                choice_col=_CHOICE_COL,
                 specification=self.specification,
                 names=self.names,
                 model_type='MNL')
