@@ -4,6 +4,7 @@ pylogit interface
 
 from . import Interface
 from .. import MultinomialLogit
+from collections import OrderedDict
 import numpy as np
 import pandas as pd
 import pylogit as pl
@@ -18,16 +19,20 @@ class PylogitInterface(Interface):
         if not isinstance(model.data, pd.DataFrame):
             raise NoDataLoaded
 
+        # Create mapping from choice strings to integers begining from 0
+        number_of_choices = model.number_of_choices()
+        self.choice_encoding = dict(
+            zip(model.choices, range(number_of_choices)))
+
         self._convert_to_long_format()
+        self._create_specification_and_names()
 
     def _encode_choices_as_integers(self):
         """
         Convert choice labels from strings to integers as pylogit expects
         """
         model = self.model
-        number_of_choices = model.number_of_choices()
-        # Create mapping from choice strings to integers begining from 0
-        choice_encoding = dict(zip(model.choices, range(number_of_choices)))
+        choice_encoding = self.choice_encoding
 
         # Create alternative specific variables dictionary using the integer
         # encoding
@@ -75,6 +80,45 @@ class PylogitInterface(Interface):
         # Remove choice bool and observation_id column from wide data
         model.data.drop(columns=['choice_bool', 'observation_id'],
                         inplace=True)
+
+    def _create_specification_and_names(self):
+        """
+        Create the pylogit specification and paramter names dictionaries
+        """
+        specification = OrderedDict()
+        names = OrderedDict()
+        pass
+
+        model = self.model
+        choice_encoding = self.choice_encoding
+
+        # Intercepts
+        specification['intercept'] = [choice_encoding[choice]
+                                      for choice in model.intercepts.keys()]
+        names['intercept'] = [intercept
+                              for intercept in model.intercepts.values()]
+
+        # Variables
+        for variable in model.all_variables():
+            # Identify which choice utilities contain variable
+            relevant_choices = [
+                choice for choice in model.choices
+                if variable in model.specification[choice].all_variables]
+            # Determine the corresponding parameters
+            parameters = [model.specification[choice].term_dict[variable]
+                          for choice in relevant_choices]
+            # Group choices into parameter sets using choice encoding
+            parameter_set = set(parameters)
+            parameter_set = dict.fromkeys(parameter_set, [])
+            for choice, parameter in zip(relevant_choices, parameters):
+                parameter_set[parameter].append(choice_encoding[choice])
+            # Create specification dictionary entry
+            specification[variable] = list(parameter_set.values())
+            # Create names dictionary entry
+            names[variable] = list(parameter_set.keys())
+
+        self.specification = specification
+        self.names = names
 
 
 class NoDataLoaded(Exception):

@@ -84,3 +84,35 @@ class TestPylogitLongData():
             assert long_data['choice_bool'][observation*2+1] == 1
         else:
             assert 0
+
+
+class TestPylogitSpecification():
+    def test_intercepts(self, simple_multinomial_pylogit_interface):
+        interface = simple_multinomial_pylogit_interface
+        assert interface.specification['intercept'] == [0]
+
+    @pytest.mark.parametrize('variable,specification', [
+        ('var1', [0]),
+        ('var2', [1]),
+        ('var3', [0, 1])
+        ])
+    def test_variables(self, simple_multinomial_pylogit_interface,
+                       variable, specification):
+        interface = simple_multinomial_pylogit_interface
+        assert interface.specification[variable] == [specification]
+
+
+class TestPylogitNames():
+    def test_intercepts(self, simple_multinomial_pylogit_interface):
+        interface = simple_multinomial_pylogit_interface
+        assert interface.names['intercept'] == ['cchoice1']
+
+    @pytest.mark.parametrize('variable,names', [
+        ('var1', 'p1'),
+        ('var2', 'p1'),
+        ('var3', 'p2')
+        ])
+    def test_variables(self, simple_multinomial_pylogit_interface,
+                       variable, names):
+        interface = simple_multinomial_pylogit_interface
+        assert interface.names[variable] == [names]
