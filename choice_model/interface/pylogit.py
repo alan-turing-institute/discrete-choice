@@ -28,10 +28,10 @@ class PylogitInterface(Interface):
         if not isinstance(model.data, pd.DataFrame):
             raise NoDataLoaded
 
-        # Create mapping from choice strings to integers begining from 0
+        # Create mapping from choice strings to integers begining from 1
         number_of_choices = model.number_of_choices()
         self.choice_encoding = dict(
-            zip(model.choices, range(number_of_choices)))
+            zip(model.choices, np.arange(number_of_choices, dtype=int)+1))
 
         self._convert_to_long_format()
         self._create_specification_and_names()
@@ -93,7 +93,7 @@ class PylogitInterface(Interface):
 
     def _create_specification_and_names(self):
         """
-        Create the pylogit specification and paramter names dictionaries
+        Create the pylogit specification and paramter names dictionaries.
         """
         specification = OrderedDict()
         names = OrderedDict()
@@ -114,14 +114,22 @@ class PylogitInterface(Interface):
             relevant_choices = [
                 choice for choice in model.choices
                 if variable in model.specification[choice].all_variables]
+
             # Determine the corresponding parameters
             parameters = [model.specification[choice].term_dict[variable]
                           for choice in relevant_choices]
+
             # Group choices into parameter sets using choice encoding
             parameter_set = set(parameters)
-            parameter_set = dict.fromkeys(parameter_set, [])
+            parameter_set = {parameter: [] for parameter in parameter_set}
             for choice, parameter in zip(relevant_choices, parameters):
                 parameter_set[parameter].append(choice_encoding[choice])
+
+            # Unpack choice lists of length 1
+            for parameter, choices in parameter_set.items():
+                if len(choices) == 1:
+                    parameter_set[parameter] = choices[0]
+
             # Create specification dictionary entry
             specification[variable] = list(parameter_set.values())
             # Create names dictionary entry
