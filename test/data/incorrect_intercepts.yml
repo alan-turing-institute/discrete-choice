@@ -9,21 +9,23 @@ availability:
   choice1: avail_choice1
   choice2: avail_choice2
 
-variables:
+choice_independent_variables:
   - var1
   - var2
-  - var3
-  - var4
+choice_dependent_variables:
+  var3:
+    choice1: choice1_var3
+    choice2: choice2_var3
 
 intercepts:
-  var1: cchoice1
-  var2: cchoice2
+  choice1: cchoice1
+  choice2: cchoice2
 parameters:
   - p1
   - p2
 
 specification:
   choice1:
-    cchoice1 + p1*var1 + p2*var2
+    cchoice1 + p1*var1 + p2*var3
   choice2:
-    p1*var3 + p2*var4
+    p1*var2 + p2*var3

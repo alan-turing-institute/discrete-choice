@@ -15,7 +15,7 @@ availability:
   walk: avail_walk
   passenger: avail_passenger
 
-variables:
+choice_independent_variables:
   - head_of_household
   - transit_walk_time
   - car_competition
@@ -23,14 +23,19 @@ variables:
   - female
   - central_zone
   - manual_worker
-  - public_transport_time
-  - car_time
-  - cycle_time
-  - walk_time
-  - public_transport_cost
-  - car_cost
-  - cycle_non_linear
-  - walk_non_linear
+choice_dependent_variables:
+  travel_time:
+    public_transport: public_transport_time
+    car: car_time
+    cycle: cycle_time
+    walk: walk_time
+    passenger: car_time
+  cost:
+    public_transport: public_transport_cost
+    car: car_cost
+  non_linear:
+    cycle: cycle_non_linear
+    walk: walk_non_linear
 
 intercepts:
   public_transport: cpt
@@ -52,12 +57,12 @@ parameters:
 
 specification:
   public_transport:
-    cpt + ptime*public_transport_time + pcost*public_transport_cost + phead_of_household*head_of_household + porigin_walk*transit_walk_time
+    cpt + ptime*travel_time + pcost*cost + phead_of_household*head_of_household + porigin_walk*transit_walk_time
   car:
-    ptime*car_time + pcost*car_cost + pcar_competition*car_competition
+    ptime*travel_time + pcost*cost + pcar_competition*car_competition
   cycle:
-    ccycle + ptime*cycle_time + pnon-linear*cycle_non_linear + pfemale_cycle*female + pcentral_zone*central_zone + pmanual_worker*manual_worker
+    ccycle + ptime*travel_time + pnon-linear*non_linear + pfemale_cycle*female + pcentral_zone*central_zone + pmanual_worker*manual_worker
   walk:
-    cwalk + ptime*walk_time + pnon-linear*walk_non_linear
+    cwalk + ptime*travel_time + pnon-linear*non_linear
   passenger:
-    cpass + ptime*car_time + phas_car*has_car + pfemale_passenger*female
+    cpass + ptime*travel_time + phas_car*has_car + pfemale_passenger*female

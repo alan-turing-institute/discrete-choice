@@ -40,7 +40,12 @@ class TestChoiceModel():
 
     def test_model_variables(self, simple_model):
         model = simple_model
-        assert model.variables == ['var1', 'var2', 'var3', 'var4']
+        assert model.all_variables() == ['var1', 'var2', 'var3']
+
+    def test_model_variables_fields(self, simple_model):
+        model = simple_model
+        assert model.all_variable_fields() == ['var1', 'var2', 'choice1_var3',
+                                               'choice2_var3']
 
     def test_model_intercepts(self, simple_model):
         model = simple_model
@@ -48,7 +53,19 @@ class TestChoiceModel():
 
     def test_model_parameters(self, simple_model):
         model = simple_model
-        assert model.parameters == ['p1', 'p2']
+        assert model.parameters == ['p1', 'p2', 'p3']
+
+    def test_number_of_choices(self, simple_model):
+        model = simple_model
+        assert model.number_of_choices() == 2
+
+    def test_number_of_parameters(self, simple_model):
+        model = simple_model
+        assert model.number_of_parameters() == 4
+
+    def test_number_of_parameters_excluding_intercepts(self, simple_model):
+        model = simple_model
+        assert model.number_of_parameters(include_intercepts=False) == 3
 
 
 def test_missing_yaml_key():
@@ -83,30 +100,21 @@ def simple_multinomial_model():
         return choice_model.MultinomialLogit.from_yaml(yaml_file)
 
 
-@pytest.fixture(scope='class')
-def simple_multinomial_utilities():
-    utility_string1 = 'cchoice1 + p1* var1 + p2*var2'
-    utility_string2 = 'p1* var3 + p2*var4'
-    variables = ['var1', 'var2', 'var3', 'var4']
+class TestMultinomialLogit():
+    utility_string1 = 'cchoice1 + p1* var1 + p3*var3'
+    utility_string2 = 'p2* var2 + p3*var3'
+    variables = ['var1', 'var2', 'var3']
     intercept = 'cchoice1'
-    parameters = ['p1', 'p2']
-
+    parameters = ['p1', 'p2', 'p3']
     u1 = choice_model.Utility(utility_string1, variables, intercept,
                               parameters)
     u2 = choice_model.Utility(utility_string2, variables, None, parameters)
 
-    return u1, u2
-
-
-class TestMultinomialLogit():
-    def test_specification1(self, simple_multinomial_model,
-                            simple_multinomial_utilities):
+    @pytest.mark.parametrize('choice,utility', [
+        ('choice1', u1),
+        ('choice2', u2)
+        ])
+    def test_specification(self, simple_multinomial_model,
+                           choice, utility):
         model = simple_multinomial_model
-        u1, u2 = simple_multinomial_utilities
-        assert model.specification['choice1'] == u1
-
-    def test_specification2(self, simple_multinomial_model,
-                            simple_multinomial_utilities):
-        model = simple_multinomial_model
-        u1, u2 = simple_multinomial_utilities
-        assert model.specification['choice2'] == u2
+        assert model.specification[choice] == utility

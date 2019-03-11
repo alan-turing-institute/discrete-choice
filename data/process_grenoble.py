@@ -29,37 +29,29 @@ data = data.applymap(lambda x: 0.0 if np.isnan(x) else x)
 # Convert all data to integers
 data = data.applymap(lambda x: int(x))
 
-# choice codes
-choice_code = {'public_transport': 1,
-               'car': 2,
-               'cycle': 3,
-               'walk': 4,
-               'passenger': 5,
-               'other': 6}
-
 
 @np.vectorize
 def encode_choice(original_code):
     if original_code in [8, 10]:
-        return choice_code['public_transport']
+        return 'public_transport'
     elif original_code == 5:
-        return choice_code['car']
+        return 'car'
     elif original_code in [2, 3, 4]:
-        return choice_code['cycle']
+        return 'cycle'
     elif original_code == 1:
-        return choice_code['walk']
+        return 'walk'
     elif original_code in [6, 7]:
-        return choice_code['passenger']
+        return 'passenger'
     else:
-        return choice_code['other']
+        return 'other'
 
 
 # Encode choices
 data['mode'] = data['mode'].apply(encode_choice)
 # Drop observations with 'other' choice
 print('{} bad choices dropped'.format(
-    sum(data['mode'] == choice_code['other'])))
-data = data[data['mode'] != choice_code['other']]
+    sum(data['mode'] == 'other')))
+data = data[data['mode'] != 'other']
 
 # Drop records with >= 5 cars
 print('{} observations with >= 5 cars dropped'.format(sum(data['cars'] >= 5)))
@@ -82,7 +74,7 @@ availability = ['avail_public_transport', 'avail_car', 'avail_cycle',
 modes = ['public_transport', 'car', 'cycle', 'walk', 'passenger']
 for av, mode in zip(availability, modes):
     bad_records = data[['mode', av]].apply(
-        lambda x: True if x[0] == choice_code[mode] and x[1] == 0 else False,
+        lambda x: True if x[0] == mode and x[1] == 0 else False,
         axis=1)
     n_bad_records = sum(bad_records)
     print('{} records with choice {} but no availability'.format(n_bad_records,
