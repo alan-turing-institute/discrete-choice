@@ -73,8 +73,8 @@ class PylogitInterface(Interface):
         (alt_specific_vars,
          availability_vars) = self._encode_choices_as_integers()
         # Create observation number column as a range of integers from 1
-        self.model.data[_OBSERVATION_COL] = np.arange(model.data.shape[0],
-                                                      dtype=int)+1
+        model.data[_OBSERVATION_COL] = np.arange(model.data.shape[0],
+                                                 dtype=int)+1
 
         # Use pylogit routine to convert to long format
         self.long_data = pl.convert_wide_to_long(
