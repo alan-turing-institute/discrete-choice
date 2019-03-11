@@ -55,6 +55,10 @@ class Utility(object):
         # Ensure all variables and parameters appear at most once
         self._check_duplicates()
 
+        self.all_variables = [term.variable for term in self.terms]
+        self.all_parameters = [term.parameter for term in self.terms]
+        self.term_dict = dict(self.terms)
+
     @staticmethod
     def _split_term(term):
         """
