@@ -42,7 +42,7 @@ class TestPylogitInterface():
             choice_model.PylogitInterface(simple_model)
 
     def test_no_data(self, simple_multinomial_model):
-        with pytest.raises(choice_model.interface.pylogit.NoDataLoaded):
+        with pytest.raises(choice_model.interface.interface.NoDataLoaded):
             choice_model.PylogitInterface(simple_multinomial_model)
 
 
