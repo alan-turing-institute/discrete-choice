@@ -11,6 +11,8 @@ _ALO_COMMAND_COEFFICIENTS = '$coeff'
 _ALO_COMMAND_ALTERNATIVES = "$nest root()"
 _ALO_COMMAND_ARRAY = "$array"
 
+_MAX_CHARACTER_LENGTH = 10
+
 
 class AlogitInterface(Interface):
     """
@@ -25,8 +27,63 @@ class AlogitInterface(Interface):
     def __init__(self, model, alogit_path=None):
         super().__init__(model)
 
+        self._create_abbreviations()
         self.data_file_path = 'aaa'
         self.alo = self._create_alo_file()
+
+    def _create_abbreviations(self):
+        """
+        Create abbreviations of variable and parameter names conforming to
+        ALOGIT's 10 character limit
+        """
+        model = self.model
+
+        full = []
+        abbreviations = []
+        # Abbreviate choice names
+        for choice in model.choices:
+            full.append(choice)
+            abbreviations.append(self._abbreviate(choice))
+        # Abbreviate choice names / column label
+        choice_column = model.choice_column
+        full.append(choice_column)
+        abbreviations.append(self._abbreviate(choice_column))
+        # Abbreviate availability column labels
+        for availability in model.availability.values():
+            full.append(availability)
+            abbreviations.append(self._abbreviate(availability))
+        # Abbreviate variable names / column labels
+        all_variables_and_fields = set(model.all_variables()
+                                       + model.all_variable_fields())
+        for variable in all_variables_and_fields:
+            full.append(variable)
+            abbreviations.append(self._abbreviate(variable))
+        # Abbreviate intercept names
+        for intercept in model.intercepts.values():
+            full.append(intercept)
+            abbreviations.append(self._abbreviate(intercept))
+        # Abbreviate parameter names
+        for parameter in model.parameters:
+            full.append(parameter)
+            abbreviations.append(self._abbreviate(parameter))
+
+        # Handle duplicates due to truncation (only up to ten duplicates)
+        for abbreviation in abbreviations[:]:
+            duplicate_count = abbreviations.count(abbreviation)
+            if duplicate_count > 1:
+                for occurance in range(1, duplicate_count+1):
+                    print(occurance, abbreviation)
+                    index = abbreviations.index(abbreviation)
+                    abbreviations[index] = (
+                        abbreviation[:-1] + str(occurance)
+                        )
+
+        self.abbreviate = dict(zip(full, abbreviations))
+        self.elongate = dict(zip(abbreviations, full))
+
+    @staticmethod
+    def _abbreviate(string):
+        return string[:_MAX_CHARACTER_LENGTH]
 
     def _write_alo_file(self):
         # Use first word in title as file prefix
