@@ -191,7 +191,7 @@ class TestPylogitGrenobleEstimation():
         ('pmanual_worker', 0.755348),
         ('ptime', -0.000384),
         ('pcost', -0.001127),
-        ('pnon-linear', -0.003240)
+        ('pnon_linear', -0.003240)
         ])
     def test_optimised_paramters(self, grenoble_estimation,
                                  parameter, value):
