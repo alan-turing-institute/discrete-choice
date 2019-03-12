@@ -132,42 +132,41 @@ class AlogitInterface(Interface):
         model = self.model
         alo = ''
         # Write title
-        alo += self._add_alo_record(_ALO_COMMAND_TITLE, model.title)
+        alo += self._alo_record(_ALO_COMMAND_TITLE, model.title)
         # Estimate instruction
-        alo += self._add_alo_record(_ALO_COMMAND_ESTIMATE)
+        alo += self._alo_record(_ALO_COMMAND_ESTIMATE)
         # Write coefficients (parameters and intercepts)
-        alo += self._add_alo_record(
+        alo += self._alo_record(
             _ALO_COMMAND_COEFFICIENTS,
             *model.parameters + list(model.intercepts.values())
             )
         # Write alternatives (choices)
-        alo += self._add_alo_record(_ALO_COMMAND_ALTERNATIVES,
-                                    *model.choices)
+        alo += self._alo_record(_ALO_COMMAND_ALTERNATIVES, *model.choices)
         # Write data file specification
         alo += self._specify_data_file(self.data_file_path)
         # Write availability columns
         for choice in model.choices:
-            alo += self._add_alo_record(self._array_record('Avail', choice),
-                                        model.availability[choice])
+            alo += self._alo_record(self._array_record('Avail', choice),
+                                    model.availability[choice])
         # Define choice column
-        alo += self._add_alo_record('choice =', model.choice_column)
+        alo += self._alo_record('choice =', model.choice_column)
         # Write choice dependent variable specification
         for variable, mapping in model.choice_dependent_variables.items():
             # Define the choice dependent variable as an array with size
             # equal to the number of alternatives
-            alo += self._add_alo_record(_ALO_COMMAND_ARRAY,
-                                        self._array(variable, 'alts'))
+            alo += self._alo_record(_ALO_COMMAND_ARRAY,
+                                    self._array(variable, 'alts'))
             # Define the data file column corresponding to each choice
             for choice, column_label in mapping.items():
-                alo += self._add_alo_record(
+                alo += self._alo_record(
                     self._array_record(variable, choice), column_label)
         # Write utility specifications for each choice
         for choice in model.choices:
-            alo += self._add_alo_record(self._array_record('Util', choice),
-                                        self._utility_string(choice))
+            alo += self._alo_record(self._array_record('Util', choice),
+                                    self._utility_string(choice))
         return alo
 
-    def _add_alo_record(self, command, *args):
+    def _alo_record(self, command, *args):
         """
         Write a record to the ALOGIT input file
         """
