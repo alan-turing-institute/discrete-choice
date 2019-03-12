@@ -130,14 +130,16 @@ class AlogitInterface(Interface):
                                         self._utility_string(choice))
         return alo
 
-    @staticmethod
-    def _add_alo_record(command, *args):
+    def _add_alo_record(self, command, *args):
         """
         Write a command to the ALOGIT input file
         """
         string = command
         for arg in args:
-            string += ' ' + arg
+            if arg in self.abbreviate:
+                string += ' ' + self.abbreviate[arg]
+            else:
+                string += ' ' + arg
         string += '\n'
         return string
 
@@ -147,7 +149,9 @@ class AlogitInterface(Interface):
         input file.
         """
         # Create space seperated string of column labels
-        column_labels = ' '.join(self.model.data.columns)
+        column_labels = [self.abbreviate[label]
+                         for label in self.model.data.columns]
+        column_labels = ' '.join(column_labels)
         string = 'file (name=' + data_file_path + ') ' + column_labels + '\n'
         return string
 
@@ -170,10 +174,6 @@ class AlogitInterface(Interface):
             variable = term.variable
             # Format choice dependent variables
             if variable in choice_dependent_variables:
-                # utility_string.append(
-                #     term.parameter + '*'
-                #     + model.choice_dependent_variables[variable][choice]
-                #     )
                 utility_string.append(term.parameter + '*' + variable + '('
                                       + choice + ')')
 
