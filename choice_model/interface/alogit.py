@@ -4,6 +4,7 @@ ALOGIT interface
 
 from . import Interface
 from .. import MultinomialLogit
+import textwrap
 
 _ALO_COMMAND_TITLE = '$title '
 _ALO_COMMAND_ESTIMATE = '$estimate'
@@ -12,6 +13,7 @@ _ALO_COMMAND_ALTERNATIVES = "$nest root()"
 _ALO_COMMAND_ARRAY = "$array"
 
 _MAX_CHARACTER_LENGTH = 10
+_MAX_LINE_LENGTH = 77
 
 
 class AlogitInterface(Interface):
@@ -69,10 +71,11 @@ class AlogitInterface(Interface):
 
         # Handle duplicates due to truncation (only up to ten duplicates)
         for abbreviation in abbreviations[:]:
+            # Count number of duplicates of abbreviation
             duplicate_count = abbreviations.count(abbreviation)
             if duplicate_count > 1:
+                # Replace each occurance usings numbers 1--duplicate_count
                 for occurance in range(1, duplicate_count+1):
-                    print(occurance, abbreviation)
                     index = abbreviations.index(abbreviation)
                     abbreviations[index] = (
                         abbreviation[:-1] + str(occurance)
@@ -123,14 +126,16 @@ class AlogitInterface(Interface):
         """
         # Use first word in title as file prefix
         with open(self.model.title.split(' ')[0] + '.alo', 'w') as alo_file:
-            alo_file.write(self.alo)
+            for line in self.alo:
+                alo_file.write(line)
+                alo_file.write('\n')
 
     def _create_alo_file(self):
         """
         Create ALOGIT input file string
         """
         model = self.model
-        alo = ''
+        alo = []
         # Write title
         alo += self._alo_record(_ALO_COMMAND_TITLE, model.title)
         # Estimate instruction
@@ -173,8 +178,8 @@ class AlogitInterface(Interface):
         string = command
         for arg in args:
             string += ' ' + self.abbreviate(arg)
-        string += '\n'
-        return string
+        return textwrap.wrap(string, width=_MAX_LINE_LENGTH,
+                             break_long_words=False)
 
     def _array(self, array, argument):
         """
@@ -199,8 +204,9 @@ class AlogitInterface(Interface):
         column_labels = [self.abbreviate(label)
                          for label in self.model.data.columns]
         column_labels = ' '.join(column_labels)
-        string = 'file (name=' + data_file_path + ') ' + column_labels + '\n'
-        return string
+        string = 'file (name=' + data_file_path + ') ' + column_labels
+        return textwrap.wrap(string, width=_MAX_LINE_LENGTH,
+                             break_long_words=False)
 
     def _utility_string(self, choice):
         """

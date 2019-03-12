@@ -91,8 +91,8 @@ class TestAloFile():
         interface = simple_multinomial_alogit_interface
         assert (
             interface._specify_data_file('file.alo') ==
-            'file (name=file.alo) var1 var2 choice1_va choice2_va avail_cho1'
-            ' avail_cho2 alternativ\n'
+            ['file (name=file.alo) var1 var2 choice1_va choice2_va avail_cho1'
+             ' avail_cho2', 'alternativ']
             )
 
     @pytest.mark.parametrize('array,argument,string', [
