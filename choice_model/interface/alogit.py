@@ -78,12 +78,44 @@ class AlogitInterface(Interface):
                         abbreviation[:-1] + str(occurance)
                         )
 
-        self.abbreviate = dict(zip(full, abbreviations))
-        self.elongate = dict(zip(abbreviations, full))
+        self.abbreviation = dict(zip(full, abbreviations))
+        self.elongation = dict(zip(abbreviations, full))
 
     @staticmethod
     def _abbreviate(string):
         return string[:_MAX_CHARACTER_LENGTH]
+
+    def abbreviate(self, string):
+        """
+        Abbreviate a string if its abbreviation has been defined.
+
+        Args:
+            string (str): The string to attempt to abbreviate.
+
+        Returns:
+            (str): The abbreviation of string if it has been defined by the
+            interface, string otherwise.
+        """
+        if string in self.abbreviation:
+            return self.abbreviation[string]
+        else:
+            return string
+
+    def elongate(self, string):
+        """
+        Produce the long form of an abbreviation defined by the interface.
+
+        Args:
+            string (str): The string to elongate.
+
+        Returns:
+            (str): The long form of string as defined by the model.
+
+        Raises:
+            KeyError: If string is not an abbreviation defined by the
+            interface.
+        """
+        return self.elongation[string]
 
     def _write_alo_file(self):
         """
@@ -139,10 +171,7 @@ class AlogitInterface(Interface):
         """
         string = command
         for arg in args:
-            if arg in self.abbreviate:
-                string += ' ' + self.abbreviate[arg]
-            else:
-                string += ' ' + arg
+            string += ' ' + self.abbreviate(arg)
         string += '\n'
         return string
 
@@ -150,10 +179,8 @@ class AlogitInterface(Interface):
         """
         Format an array in the form "array(argument)"
         """
-        if array in self.abbreviate:
-            array = self.abbreviate[array]
-        if argument in self.abbreviate:
-            argument = self.abbreviate[argument]
+        array = self.abbreviate(array)
+        argument = self.abbreviate(argument)
         return array + '(' + argument + ')'
 
     def _array_record(self, array, argument):
@@ -168,7 +195,7 @@ class AlogitInterface(Interface):
         input file.
         """
         # Create space seperated string of column labels
-        column_labels = [self.abbreviate[label]
+        column_labels = [self.abbreviate(label)
                          for label in self.model.data.columns]
         column_labels = ' '.join(column_labels)
         string = 'file (name=' + data_file_path + ') ' + column_labels + '\n'
@@ -194,14 +221,14 @@ class AlogitInterface(Interface):
             # Format choice dependent variables
             if variable in choice_dependent_variables:
                 utility_string.append(
-                    self.abbreviate[term.parameter] + '*'
-                    + self.abbreviate[variable] + '('
-                    + self.abbreviate[choice] + ')'
+                    self.abbreviate(term.parameter) + '*'
+                    + self.abbreviate(variable) + '('
+                    + self.abbreviate(choice) + ')'
                     )
             else:
                 utility_string.append(
-                    self.abbreviate[term.parameter] + '*'
-                    + self.abbreviate[term.variable]
+                    self.abbreviate(term.parameter) + '*'
+                    + self.abbreviate(term.variable)
                     )
 
         # Join all terms as a sum

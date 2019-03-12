@@ -68,13 +68,13 @@ class TestAbbreviation():
     def test_abbreviation(self, simple_multinomial_alogit_interface,
                           full, short):
         interface = simple_multinomial_alogit_interface
-        assert interface.abbreviate[full] == short
+        assert interface.abbreviate(full) == short
 
     @pytest.mark.parametrize('full,short', abbreviation_map)
     def test_elongation(self, simple_multinomial_alogit_interface,
                         full, short):
         interface = simple_multinomial_alogit_interface
-        assert interface.elongate[short] == full
+        assert interface.elongate(short) == full
 
 
 class TestAloFile():
