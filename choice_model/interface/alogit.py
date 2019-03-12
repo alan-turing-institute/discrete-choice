@@ -113,7 +113,7 @@ class AlogitInterface(Interface):
         alo += self._specify_data_file(self.data_file_path)
         # Write availability columns
         for choice in model.choices:
-            alo += self._add_alo_record('Avail(' + choice + ') =',
+            alo += self._add_alo_record(self._array_record('Avail', choice),
                                         model.availability[choice])
         # Define choice column
         alo += self._add_alo_record('choice =', model.choice_column)
@@ -121,21 +121,21 @@ class AlogitInterface(Interface):
         for variable, mapping in model.choice_dependent_variables.items():
             # Define the choice dependent variable as an array with size
             # equal to the number of alternatives
-            alo += self._add_alo_record(_ALO_COMMAND_ARRAY, variable
-                                        + '(alts)')
+            alo += self._add_alo_record(_ALO_COMMAND_ARRAY,
+                                        self._array(variable, 'alts'))
             # Define the data file column corresponding to each choice
             for choice, column_label in mapping.items():
-                alo += self._add_alo_record(variable + '(' + choice
-                                            + ') =', column_label)
+                alo += self._add_alo_record(
+                    self._array_record(variable, choice), column_label)
         # Write utility specifications for each choice
         for choice in model.choices:
-            alo += self._add_alo_record('Util(' + choice + ') =',
+            alo += self._add_alo_record(self._array_record('Util', choice),
                                         self._utility_string(choice))
         return alo
 
     def _add_alo_record(self, command, *args):
         """
-        Write a command to the ALOGIT input file
+        Write a record to the ALOGIT input file
         """
         string = command
         for arg in args:
@@ -145,6 +145,22 @@ class AlogitInterface(Interface):
                 string += ' ' + arg
         string += '\n'
         return string
+
+    def _array(self, array, argument):
+        """
+        Format an array in the form "array(argument)"
+        """
+        if array in self.abbreviate:
+            array = self.abbreviate[array]
+        if argument in self.abbreviate:
+            argument = self.abbreviate[argument]
+        return array + '(' + argument + ')'
+
+    def _array_record(self, array, argument):
+        """
+        Format an array record in the form "array(argument) ="
+        """
+        return self._array(array, argument) + ' ='
 
     def _specify_data_file(self, data_file_path):
         """

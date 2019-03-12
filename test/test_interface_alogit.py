@@ -94,3 +94,21 @@ class TestAloFile():
             'file (name=file.alo) var1 var2 choice1_va choice2_va avail_cho1'
             ' avail_cho2 alternativ\n'
             )
+
+    @pytest.mark.parametrize('array,argument,string', [
+        ('var3', 'choice1', 'var3(choice1)'),
+        ('var3', 'choice2', 'var3(choice2)')
+        ])
+    def test_array(self, simple_multinomial_alogit_interface, array, argument,
+                   string):
+        interface = simple_multinomial_alogit_interface
+        assert interface._array(array, argument) == string
+
+    @pytest.mark.parametrize('array,argument,string', [
+        ('var3', 'choice1', 'var3(choice1) ='),
+        ('var3', 'choice2', 'var3(choice2) =')
+        ])
+    def test_array_record(self, simple_multinomial_alogit_interface, array,
+                          argument, string):
+        interface = simple_multinomial_alogit_interface
+        assert interface._array_record(array, argument) == string
