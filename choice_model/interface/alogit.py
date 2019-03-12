@@ -135,9 +135,11 @@ class AlogitInterface(Interface):
         alo += self._add_alo_record(_ALO_COMMAND_TITLE, model.title)
         # Estimate instruction
         alo += self._add_alo_record(_ALO_COMMAND_ESTIMATE)
-        # Write coefficients (parameters)
-        alo += self._add_alo_record(_ALO_COMMAND_COEFFICIENTS,
-                                    *model.parameters)
+        # Write coefficients (parameters and intercepts)
+        alo += self._add_alo_record(
+            _ALO_COMMAND_COEFFICIENTS,
+            *model.parameters + list(model.intercepts.values())
+            )
         # Write alternatives (choices)
         alo += self._add_alo_record(_ALO_COMMAND_ALTERNATIVES,
                                     *model.choices)
