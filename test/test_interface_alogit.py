@@ -68,7 +68,6 @@ class TestAbbreviation():
     def test_abbreviation(self, simple_multinomial_alogit_interface,
                           full, short):
         interface = simple_multinomial_alogit_interface
-        print(interface.abbreviate)
         assert interface.abbreviate[full] == short
 
     @pytest.mark.parametrize('full,short', abbreviation_map)
@@ -76,3 +75,22 @@ class TestAbbreviation():
                         full, short):
         interface = simple_multinomial_alogit_interface
         assert interface.elongate[short] == full
+
+
+class TestAloFile():
+    @pytest.mark.parametrize('choice,string', [
+        ('choice1', 'cchoice1 + p1*var1 + p3*var3(choice1)'),
+        ('choice2', 'p2*var2 + p3*var3(choice2)')
+        ])
+    def test_utility_string(self, simple_multinomial_alogit_interface, choice,
+                            string):
+        interface = simple_multinomial_alogit_interface
+        assert interface._utility_string(choice) == string
+
+    def test_data_file_string(self, simple_multinomial_alogit_interface):
+        interface = simple_multinomial_alogit_interface
+        assert (
+            interface._specify_data_file('file.alo') ==
+            'file (name=file.alo) var1 var2 choice1_va choice2_va avail_cho1'
+            ' avail_cho2 alternativ\n'
+            )

@@ -25,3 +25,8 @@ pylogit_interface.estimate()
 
 # Print pylogit summary
 pylogit_interface.pylogit_model.print_summaries()
+
+# Create alogit interface
+alogit_interface = choice_model.AlogitInterface(model)
+alogit_interface.data_file_path = 'grenoble.csv'
+alogit_interface._write_alo_file()

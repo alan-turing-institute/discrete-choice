@@ -86,13 +86,16 @@ class AlogitInterface(Interface):
         return string[:_MAX_CHARACTER_LENGTH]
 
     def _write_alo_file(self):
+        """
+        Write ALOGIT input file string to a file
+        """
         # Use first word in title as file prefix
         with open(self.model.title.split(' ')[0] + '.alo', 'w') as alo_file:
             alo_file.write(self.alo)
 
     def _create_alo_file(self):
         """
-        Write the ALOGIT input file
+        Create ALOGIT input file string
         """
         model = self.model
         alo = ''
@@ -174,11 +177,16 @@ class AlogitInterface(Interface):
             variable = term.variable
             # Format choice dependent variables
             if variable in choice_dependent_variables:
-                utility_string.append(term.parameter + '*' + variable + '('
-                                      + choice + ')')
-
+                utility_string.append(
+                    self.abbreviate[term.parameter] + '*'
+                    + self.abbreviate[variable] + '('
+                    + self.abbreviate[choice] + ')'
+                    )
             else:
-                utility_string.append(term.parameter + '*' + term.variable)
+                utility_string.append(
+                    self.abbreviate[term.parameter] + '*'
+                    + self.abbreviate[term.variable]
+                    )
 
         # Join all terms as a sum
         utility_string = ' + '.join(utility_string)
