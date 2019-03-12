@@ -89,10 +89,11 @@ class TestAloFile():
 
     def test_data_file_string(self, simple_multinomial_alogit_interface):
         interface = simple_multinomial_alogit_interface
+        print(interface._specify_data_file())
         assert (
-            interface._specify_data_file('file.alo') ==
-            ['file (name=file.alo) var1 var2 choice1_va choice2_va avail_cho1'
-             ' avail_cho2', 'alternativ']
+            interface._specify_data_file() ==
+            ['file (name=Simple.csv) var1 var2 choice1_va choice2_va '
+             'avail_cho1 avail_cho2', 'choice_no']
             )
 
     @pytest.mark.parametrize('array,argument,string', [
@@ -112,3 +113,9 @@ class TestAloFile():
                           argument, string):
         interface = simple_multinomial_alogit_interface
         assert interface._array_record(array, argument) == string
+
+
+class TestDataFile():
+    def test_data_file(self, simple_multinomial_alogit_interface):
+        interface = simple_multinomial_alogit_interface
+        interface._write_data_file()

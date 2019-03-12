@@ -4,6 +4,7 @@ ALOGIT interface
 
 from . import Interface
 from .. import MultinomialLogit
+import numpy as np
 import textwrap
 
 _ALO_COMMAND_TITLE = '$title '
@@ -14,6 +15,8 @@ _ALO_COMMAND_ARRAY = "$array"
 
 _MAX_CHARACTER_LENGTH = 10
 _MAX_LINE_LENGTH = 77
+
+_CHOICE_COLUMN = 'choice_no'
 
 
 class AlogitInterface(Interface):
@@ -26,11 +29,30 @@ class AlogitInterface(Interface):
     """
     _valid_models = [MultinomialLogit]
 
-    def __init__(self, model, alogit_path=None):
+    def __init__(self, model, data_file=None, alo_file=None, alogit_path=None):
         super().__init__(model)
 
+        # Define a file prefix for the input and data files
+        prefix = self.model.title.split(' ')[0]
+        # Define file names
+        if data_file is None:
+            self.data_file = prefix + '.csv'
+        if alo_file is None:
+            self.alo_file = prefix + '.alo'
+
+        # Create label abbreviations using ALOGIT's maximum character length
         self._create_abbreviations()
-        self.data_file_path = 'aaa'
+
+        # Create column labels
+        column_labels = [self.abbreviate(label)
+                         for label in model.data.columns]
+        # Replace choice column
+        column_labels[
+            column_labels.index(self.abbreviate(model.choice_column))
+            ] = _CHOICE_COLUMN
+        self.column_labels = column_labels
+
+        # Create ALOGIT input file string
         self.alo = self._create_alo_file()
 
     def _create_abbreviations(self):
@@ -125,10 +147,9 @@ class AlogitInterface(Interface):
         Write ALOGIT input file string to a file
         """
         # Use first word in title as file prefix
-        with open(self.model.title.split(' ')[0] + '.alo', 'w') as alo_file:
+        with open(self.alo_file, 'w') as alo_file:
             for line in self.alo:
-                alo_file.write(line)
-                alo_file.write('\n')
+                alo_file.write(line + '\n')
 
     def _create_alo_file(self):
         """
@@ -148,7 +169,7 @@ class AlogitInterface(Interface):
         # Write alternatives (choices)
         alo += self._alo_record(_ALO_COMMAND_ALTERNATIVES, *model.choices)
         # Write data file specification
-        alo += self._specify_data_file(self.data_file_path)
+        alo += self._specify_data_file()
         # Write availability columns
         for choice in model.choices:
             alo += self._alo_record(self._array_record('Avail', choice),
@@ -195,16 +216,14 @@ class AlogitInterface(Interface):
         """
         return self._array(array, argument) + ' ='
 
-    def _specify_data_file(self, data_file_path):
+    def _specify_data_file(self):
         """
         Write the line specifying the data file and format to the ALOGIT
         input file.
         """
         # Create space seperated string of column labels
-        column_labels = [self.abbreviate(label)
-                         for label in self.model.data.columns]
-        column_labels = ' '.join(column_labels)
-        string = 'file (name=' + data_file_path + ') ' + column_labels
+        column_labels = ' '.join(self.column_labels)
+        string = 'file (name=' + self.data_file + ') ' + column_labels
         return textwrap.wrap(string, width=_MAX_LINE_LENGTH,
                              break_long_words=False)
 
@@ -241,3 +260,28 @@ class AlogitInterface(Interface):
         # Join all terms as a sum
         utility_string = ' + '.join(utility_string)
         return utility_string
+
+    def _write_data_file(self):
+        model = self.model
+
+        # Encode choices as numbers in new dataframe column
+        number_of_choices = model.number_of_choices()
+        choice_encoding = dict(
+            zip(model.choices, np.arange(number_of_choices, dtype=float)+1))
+        model.data[_CHOICE_COLUMN] = model.data[model.choice_column].apply(
+            lambda x: choice_encoding[x])
+
+        # Produce list of column labels replacing old choice column with the
+        # new encoded choice column
+        column_labels = list(model.data.columns)[:-1]
+        column_labels[
+            column_labels.index(model.choice_column)
+            ] = _CHOICE_COLUMN
+
+        # Write data file
+        with open(self.data_file, 'w') as data_file:
+            model.data.to_csv(data_file, header=False, index=False,
+                              columns=column_labels)
+
+        # Drop encoded choice column
+        model.data.drop(columns=_CHOICE_COLUMN, inplace=True)
