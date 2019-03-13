@@ -6,6 +6,7 @@ from . import Interface
 from .. import MultinomialLogit
 import numpy as np
 import os.path
+import subprocess
 import textwrap
 
 _ALO_COMMAND_TITLE = '$title '
@@ -275,6 +276,9 @@ class AlogitInterface(Interface):
         return utility_string
 
     def _write_data_file(self):
+        """
+        Write the data in the format defined by the ALOGIT input file
+        """
         model = self.model
 
         # Encode choices as numbers in new dataframe column
@@ -298,3 +302,26 @@ class AlogitInterface(Interface):
 
         # Drop encoded choice column
         model.data.drop(columns=_CHOICE_COLUMN, inplace=True)
+
+    def estimate(self):
+        """
+        Estimate the model using ALOGIT
+        """
+        # Write the input and data files
+        self._write_alo_file()
+        self._write_data_file()
+
+        alo_path = os.path.abspath(self.alo_file)
+
+        # Call ALOGIT
+        process = subprocess.run([self.alogit_path, alo_path],
+                                 capture_output=True)
+
+        # Print output
+        if process.return_code != 0:
+            print('ALOGIT returned non-zero return code')
+            print(process.stderr.decode('utf-8'))
+        else:
+            print(process.stdout.decode('utf-8'))
+
+        self.process = process
