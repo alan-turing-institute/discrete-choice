@@ -302,6 +302,7 @@ class AlogitInterface(Interface):
         # Write data file
         with open(self.data_file, 'w') as data_file:
             model.data.to_csv(data_file, header=False, index=False,
+                              line_terminator='\n',
                               columns=column_labels)
 
         # Drop encoded choice column
