@@ -5,6 +5,7 @@ ALOGIT interface
 from . import Interface
 from .. import MultinomialLogit
 import numpy as np
+import os.path
 import textwrap
 
 _ALO_COMMAND_TITLE = '$title '
@@ -29,8 +30,10 @@ class AlogitInterface(Interface):
     """
     _valid_models = [MultinomialLogit]
 
-    def __init__(self, model, data_file=None, alo_file=None, alogit_path=None):
+    def __init__(self, model, alogit_path, data_file=None, alo_file=None):
         super().__init__(model)
+
+        self.alogit_path = os.path.abspath(alogit_path)
 
         # Define a file prefix for the input and data files
         prefix = self.model.title.split(' ')[0]

@@ -1,5 +1,6 @@
 from .context import add_project_path, data_dir
 import choice_model
+import os.path
 import pytest
 
 add_project_path()
@@ -29,21 +30,26 @@ def simple_multinomial_model_with_data():
 class TestAlogitInterface():
     def test_multinomial_logit(self, simple_multinomial_model_with_data):
         model = simple_multinomial_model_with_data
-        interface = choice_model.AlogitInterface(model)
-        interface._write_alo_file()
+        choice_model.AlogitInterface(model, './dummy')
+
+    def test_alogit_path(self, simple_multinomial_model_with_data):
+        model = simple_multinomial_model_with_data
+        interface = choice_model.AlogitInterface(model, 'alo.exe')
+        assert interface.alogit_path == os.path.abspath('alo.exe')
 
     def test_simple_model(self, simple_model):
         with pytest.raises(TypeError):
-            choice_model.AlogitInterface(simple_model)
+            choice_model.AlogitInterface(simple_model, './dummy')
 
     def test_no_data(self, simple_multinomial_model):
         with pytest.raises(choice_model.interface.interface.NoDataLoaded):
-            choice_model.AlogitInterface(simple_multinomial_model)
+            choice_model.AlogitInterface(simple_multinomial_model, './dummy')
 
 
 @pytest.fixture(scope="module")
 def simple_multinomial_alogit_interface(simple_multinomial_model_with_data):
-    return choice_model.AlogitInterface(simple_multinomial_model_with_data)
+    return choice_model.AlogitInterface(simple_multinomial_model_with_data,
+                                        './dummy')
 
 
 class TestAbbreviation():
