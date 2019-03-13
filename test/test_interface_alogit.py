@@ -125,8 +125,43 @@ class TestAloFile():
         assert interface._define_choices() == [
             'choice=recode(choice_no choice1, choice2)']
 
+    def test_alo_file(self, simple_multinomial_model_with_data, tmp_path):
+        temp = tmp_path
+        data_file = temp / 'simple.csv'
+        alo_file = temp / 'simple.alo'
+        interface = choice_model.AlogitInterface(
+            simple_multinomial_model_with_data,
+            './dummy',
+            data_file=str(data_file.absolute()),
+            alo_file=str(alo_file.absolute())
+            )
+        interface._write_alo_file()
+        file_text = alo_file.read_text()
+        # Skip checking file name as this will be different between runs
+        assert file_text[:85] == (
+            '$title  Simple model\n$estimate\n$coeff p1 p2 p3 cchoice1\n$nest'
+            ' root() choice1 choice2\n'
+            )
+        assert file_text[-333:] == (
+            ') var1 var2 choice1_va\nchoice2_va avail_cho1 avail_cho2 '
+            'choice_no\nAvail(choice1) = avail_cho1\nAvail(choice2) = '
+            'avail_cho2\nchoice=recode(choice_no choice1, choice2)\n$array '
+            'var3(alts)\nvar3(choice1) = choice1_va\nvar3(choice2) = '
+            'choice2_va\nUtil(choice1) = cchoice1 + p1*var1 + p3*var3(choice1)'
+            '\nUtil(choice2) = p2*var2 + p3*var3(choice2)\n'
+                )
+
 
 class TestDataFile():
-    def test_data_file(self, simple_multinomial_alogit_interface):
-        interface = simple_multinomial_alogit_interface
+    def test_data_file(self, simple_multinomial_model_with_data, tmp_path):
+        temp = tmp_path
+        data_file = temp / 'simple.csv'
+        alo_file = temp / 'simple.alo'
+        interface = choice_model.AlogitInterface(
+            simple_multinomial_model_with_data,
+            './dummy',
+            data_file=str(data_file.absolute()),
+            alo_file=str(alo_file.absolute())
+            )
         interface._write_data_file()
+        assert data_file.read_text() == '1,2,3,4,1,1,1.0\n5,6,7,8,1,1,2.0\n'

@@ -41,8 +41,12 @@ class AlogitInterface(Interface):
         # Define file names
         if data_file is None:
             self.data_file = prefix + '.csv'
+        else:
+            self.data_file = data_file
         if alo_file is None:
             self.alo_file = prefix + '.alo'
+        else:
+            self.alo_file = alo_file
 
         # Create label abbreviations using ALOGIT's maximum character length
         self._create_abbreviations()
