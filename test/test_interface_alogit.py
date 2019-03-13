@@ -142,14 +142,13 @@ class TestAloFile():
             '$title  Simple model\n$estimate\n$coeff p1 p2 p3 cchoice1\n$nest'
             ' root() choice1 choice2\n'
             )
-        assert file_text[-333:] == (
-            ') var1 var2 choice1_va\nchoice2_va avail_cho1 avail_cho2 '
-            'choice_no\nAvail(choice1) = avail_cho1\nAvail(choice2) = '
+        assert file_text[-267:] == (
+            'Avail(choice1) = avail_cho1\nAvail(choice2) = '
             'avail_cho2\nchoice=recode(choice_no choice1, choice2)\n$array '
             'var3(alts)\nvar3(choice1) = choice1_va\nvar3(choice2) = '
             'choice2_va\nUtil(choice1) = cchoice1 + p1*var1 + p3*var3(choice1)'
             '\nUtil(choice2) = p2*var2 + p3*var3(choice2)\n'
-                )
+            )
 
 
 class TestDataFile():
