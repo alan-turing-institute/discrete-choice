@@ -29,7 +29,7 @@ class ChoiceModel(object):
                 choice and the corresponding values are the column labels.
             choice_independent_variables (list[str]): A list of variable names
                 used in utility specifications that do not vary with choice.
-            choice_dependend_variables (dict): A dictionary defining variables
+            choice_dependent_variables (dict): A dictionary defining variables
                 that vary with choice. The keys of the dictionary are the names
                 of the variables used in the utility specifications.  The
                 values are themselves dictionaries, with the key specifying the

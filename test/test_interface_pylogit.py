@@ -42,7 +42,7 @@ class TestPylogitInterface():
             choice_model.PylogitInterface(simple_model)
 
     def test_no_data(self, simple_multinomial_model):
-        with pytest.raises(choice_model.interface.pylogit.NoDataLoaded):
+        with pytest.raises(choice_model.interface.interface.NoDataLoaded):
             choice_model.PylogitInterface(simple_multinomial_model)
 
 
@@ -191,7 +191,7 @@ class TestPylogitGrenobleEstimation():
         ('pmanual_worker', 0.755348),
         ('ptime', -0.000384),
         ('pcost', -0.001127),
-        ('pnon-linear', -0.003240)
+        ('pnon_linear', -0.003240)
         ])
     def test_optimised_paramters(self, grenoble_estimation,
                                  parameter, value):

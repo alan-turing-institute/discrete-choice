@@ -45,7 +45,7 @@ intercepts:
 parameters:
   - ptime
   - pcost
-  - pnon-linear
+  - pnon_linear
   - phead_of_household
   - porigin_walk
   - pcar_competition
@@ -61,8 +61,8 @@ specification:
   car:
     ptime*travel_time + pcost*cost + pcar_competition*car_competition
   cycle:
-    ccycle + ptime*travel_time + pnon-linear*non_linear + pfemale_cycle*female + pcentral_zone*central_zone + pmanual_worker*manual_worker
+    ccycle + ptime*travel_time + pnon_linear*non_linear + pfemale_cycle*female + pcentral_zone*central_zone + pmanual_worker*manual_worker
   walk:
-    cwalk + ptime*travel_time + pnon-linear*non_linear
+    cwalk + ptime*travel_time + pnon_linear*non_linear
   passenger:
     cpass + ptime*travel_time + phas_car*has_car + pfemale_passenger*female
