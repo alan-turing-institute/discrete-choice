@@ -322,7 +322,7 @@ class AlogitInterface(Interface):
                                  capture_output=True)
 
         # Print output
-        if process.return_code != 0:
+        if process.returncode != 0:
             print('ALOGIT returned non-zero return code')
             print(process.stderr.decode('utf-8'))
         else:
