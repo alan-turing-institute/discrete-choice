@@ -6,7 +6,6 @@ from . import Interface
 from .. import MultinomialLogit
 from collections import OrderedDict
 import numpy as np
-import pandas as pd
 import pylogit as pl
 
 # Column label for long format data indicating whether the row corresponds to
@@ -24,9 +23,6 @@ class PylogitInterface(Interface):
 
     def __init__(self, model):
         super().__init__(model)
-
-        if not isinstance(model.data, pd.DataFrame):
-            raise NoDataLoaded
 
         # Create mapping from choice strings to integers begining from 1
         number_of_choices = model.number_of_choices()
@@ -159,13 +155,3 @@ class PylogitInterface(Interface):
         self.pylogit_model.fit_mle(
             init_vals=initial_parameters,
             method=method)
-
-
-class NoDataLoaded(Exception):
-    """
-    Exception for when it is attempted to create a pylogit interface from a
-    model with no data.
-    """
-    def __init__(self):
-        super().__init__('The model must be loaded with data before creating a'
-                         ' pylogit interface')

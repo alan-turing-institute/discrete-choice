@@ -3,6 +3,7 @@ Base interface class definition
 """
 
 from .. import ChoiceModel
+import pandas as pd
 
 
 class Interface(object):
@@ -11,6 +12,9 @@ class Interface(object):
     def __init__(self, model):
         self._ensure_valid_model(model)
         self.model = model
+
+        if not isinstance(model.data, pd.DataFrame):
+            raise NoDataLoaded
 
     @classmethod
     def _ensure_valid_model(cls, model):
@@ -27,3 +31,13 @@ class Interface(object):
         """
         raise NotImplementedError(
             'estimate has not been implemented in this class')
+
+
+class NoDataLoaded(Exception):
+    """
+    Exception for when it is attempted to create a pylogit interface from a
+    model with no data.
+    """
+    def __init__(self):
+        super().__init__('The model must be loaded with data before creating a'
+                         ' pylogit interface')
