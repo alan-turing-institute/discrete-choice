@@ -174,8 +174,8 @@ class AlogitInterface(Interface):
         for choice in model.choices:
             alo += self._alo_record(self._array_record('Avail', choice),
                                     model.availability[choice])
-        # Define choice column
-        alo += self._alo_record('choice =', model.choice_column)
+        # Define choices
+        alo += self._define_choices()
         # Write choice dependent variable specification
         for variable, mapping in model.choice_dependent_variables.items():
             # Define the choice dependent variable as an array with size
@@ -224,6 +224,16 @@ class AlogitInterface(Interface):
         # Create space seperated string of column labels
         column_labels = ' '.join(self.column_labels)
         string = 'file (name=' + self.data_file + ') ' + column_labels
+        return textwrap.wrap(string, width=_MAX_LINE_LENGTH,
+                             break_long_words=False)
+
+    def _define_choices(self):
+        """
+        Create a record to explain the numeric encoding of choices
+        """
+        model = self.model
+        string = 'choice=recode(' + _CHOICE_COLUMN + ' ' + ', '.join(
+            [self.abbreviate(choice) for choice in model.choices]) + ')'
         return textwrap.wrap(string, width=_MAX_LINE_LENGTH,
                              break_long_words=False)
 

@@ -114,6 +114,11 @@ class TestAloFile():
         interface = simple_multinomial_alogit_interface
         assert interface._array_record(array, argument) == string
 
+    def test_choices_record(self, simple_multinomial_alogit_interface):
+        interface = simple_multinomial_alogit_interface
+        assert interface._define_choices() == [
+            'choice=recode(choice_no choice1, choice2)']
+
 
 class TestDataFile():
     def test_data_file(self, simple_multinomial_alogit_interface):
