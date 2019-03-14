@@ -357,9 +357,6 @@ class AlogitInterface(Interface):
 
     @requires_estimation
     def display_results(self):
-        """
-        Print the results of estimation
-        """
         process = self.process
         if process.returncode != 0:
             print('ALOGIT returned non-zero return code')
@@ -369,14 +366,8 @@ class AlogitInterface(Interface):
 
     @requires_estimation
     def null_log_likelihood(self):
-        """
-        Determine the null log likelihood of the model.
-        """
         return self._null_log_likelihood
 
     @requires_estimation
     def final_log_likelihood(self):
-        """
-        Determine the optimised log likelihood of the model.
-        """
         return self._final_log_likelihood

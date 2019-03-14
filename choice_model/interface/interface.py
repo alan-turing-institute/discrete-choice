@@ -44,16 +44,35 @@ class Interface(object):
     def null_log_likelihood(self):
         """
         Determine the null log likelihood of the model.
+
+        Returns:
+            (float): The null log likelihood (i.e. when all parameters are
+                zero).
         """
         raise NotImplementedError(
             'null_log_likelihood has not been implemented in this class')
 
-    def final_log_likelihood(sef):
+    def final_log_likelihood(self):
         """
         Determine the optimised log likelihood of the model.
+
+        Returns:
+            (float): The log likelihood with optimised parameters.
         """
         raise NotImplementedError(
             'final_log_likelihood has not been implemented in this class')
+
+    def parameters(self):
+        """
+        Determine the optimised parameters of the model.
+
+        Returns:
+            (dict): A dictionary of optimised parameters. The keys are the
+                parameter names defined in the model, the values are the
+                optimised parameters.
+        """
+        raise NotImplementedError(
+            'parameters has not been implemented in this class')
 
 
 class NoDataLoaded(Exception):
