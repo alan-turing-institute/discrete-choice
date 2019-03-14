@@ -334,8 +334,26 @@ class AlogitInterface(Interface):
         # Set estimated flag if ALOGIT ran successfully
         if process.returncode == 0:
             self._estimated = True
+            self._parse_output_file()
 
         self.process = process
+
+    def _parse_output_file(self):
+        """
+        Collect estimation data from the ALOGIT output file
+        """
+        # The filename and path is the same as the input but replacing the
+        # extension .alo with .LOG
+        file_name = os.path.splitext(
+            os.path.abspath(self.alo_file)
+            )[0] + '.LOG'
+
+        with open(file_name, 'r') as outfile:
+            for line in outfile:
+                if 'Final value of Log Likelihood' in line:
+                    self._final_log_likelihood = float(line.split()[-1])
+                elif 'Initial Log Likelihood' in line:
+                    self._null_log_likelihood = float(line.split()[-1])
 
     @requires_estimation
     def display_results(self):
@@ -348,3 +366,17 @@ class AlogitInterface(Interface):
             print(process.stderr.decode('utf-8'))
         else:
             print(process.stdout.decode('utf-8'))
+
+    @requires_estimation
+    def null_log_likelihood(self):
+        """
+        Determine the null log likelihood of the model.
+        """
+        return self._null_log_likelihood
+
+    @requires_estimation
+    def final_log_likelihood(self):
+        """
+        Determine the optimised log likelihood of the model.
+        """
+        return self._final_log_likelihood

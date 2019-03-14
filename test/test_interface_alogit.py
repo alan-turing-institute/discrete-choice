@@ -1,6 +1,7 @@
-from .context import add_project_path, data_dir
+from .context import add_project_path, data_dir, main_data_dir
 import choice_model
 import os.path
+import platform
 import pytest
 
 add_project_path()
@@ -166,8 +167,61 @@ class TestDataFile():
         assert data_file.read_text() == '1,2,3,4,1,1,1.0\n5,6,7,8,1,1,2.0\n'
 
 
+@pytest.fixture(scope="module")
+def simple_multinomial_alogit_estimation(simple_multinomial_model_with_data):
+    interface = choice_model.AlogitInterface(
+        simple_multinomial_model_with_data,
+        r'D:\Alo45.exe')
+    interface.estimate()
+    return interface
+
+
+@pytest.mark.skip(reason="ALOGIT doesn't like this model")
+@pytest.mark.skipif(platform.system() != 'Windows',
+                    reason='ALOGIT only runs on Windows')
+class TestAlogitEstimation():
+    def test_null_log_likelihood(self, simple_multinomial_alogit_estimation):
+        interface = simple_multinomial_alogit_estimation
+        assert interface.null_log_likelihood() == pytest.approx(-1.3863,
+                                                                1.0e-4)
+
+    def test_final_log_likelihood(self, simple_multinomial_alogit_estimation):
+        interface = simple_multinomial_alogit_estimation
+        assert interface.final_log_likelihood() == pytest.approx(-1.0627e-07,
+                                                                 1.0e-5)
+
+
+@pytest.fixture(scope='module')
+def grenoble_estimation():
+    with open(main_data_dir+'grenoble.yml') as model_file,\
+            open(main_data_dir+'grenoble.csv') as data_file:
+        model = choice_model.MultinomialLogit.from_yaml(model_file)
+        model.load_data(data_file)
+    interface = choice_model.AlogitInterface(model, r'D:\Alo45.exe')
+    interface.estimate()
+    return interface
+
+
+@pytest.mark.skipif(platform.system() != 'Windows',
+                    reason='ALOGIT only runs on Windows')
+class TestPylogitGrenobleEstimation():
+    def test_null_log_likelihood(self, grenoble_estimation):
+        interface = grenoble_estimation
+        assert interface.null_log_likelihood() == pytest.approx(-1452.5186,
+                                                                1.0e-4)
+
+    def test_final_log_likelihood(self, grenoble_estimation):
+        interface = grenoble_estimation
+        assert interface.final_log_likelihood() == pytest.approx(-828.5038,
+                                                                 1.0e-4)
+
+
 class TestAlogitRequiresEstimation():
-    @pytest.mark.parametrize('method', ['display_results'])
+    @pytest.mark.parametrize('method', [
+        'display_results',
+        'null_log_likelihood',
+        'final_log_likelihood'
+        ])
     def test_requires_estimation(self, simple_multinomial_alogit_interface,
                                  method):
         interface = simple_multinomial_alogit_interface
