@@ -36,10 +36,24 @@ class Interface(object):
 
     def display_results(self):
         """
-        Print the results of estimation
+        Print the results of estimation.
         """
         raise NotImplementedError(
             'display_results has not been implemented in this class')
+
+    def null_log_likelihood(self):
+        """
+        Determine the null log likelihood of the model.
+        """
+        raise NotImplementedError(
+            'null_log_likelihood has not been implemented in this class')
+
+    def final_log_likelihood(sef):
+        """
+        Determine the optimised log likelihood of the model.
+        """
+        raise NotImplementedError(
+            'final_log_likelihood has not been implemented in this class')
 
 
 class NoDataLoaded(Exception):

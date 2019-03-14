@@ -151,6 +151,16 @@ class TestPylogitEstimation():
         parameters = interface.pylogit_model.params
         assert parameters[parameter] == pytest.approx(value)
 
+    def test_null_log_likelihood(self, simple_multinomial_pylogit_estimation):
+        interface = simple_multinomial_pylogit_estimation
+        assert interface.null_log_likelihood() == pytest.approx(-1.38629,
+                                                                1.0e-5)
+
+    def test_final_log_likelihood(self, simple_multinomial_pylogit_estimation):
+        interface = simple_multinomial_pylogit_estimation
+        assert interface.final_log_likelihood() == pytest.approx(-1.0627e-07,
+                                                                 1.0e-5)
+
 
 @pytest.fixture(scope='module')
 def grenoble_estimation():
@@ -201,7 +211,11 @@ class TestPylogitGrenobleEstimation():
 
 
 class TestPylogitRequiresEstimation():
-    @pytest.mark.parametrize('method', ['display_results'])
+    @pytest.mark.parametrize('method', [
+        'display_results',
+        'null_log_likelihood',
+        'final_log_likelihood'
+        ])
     def test_requires_estimation(self, simple_multinomial_pylogit_interface,
                                  method):
         interface = simple_multinomial_pylogit_interface

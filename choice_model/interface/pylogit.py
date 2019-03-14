@@ -165,3 +165,17 @@ class PylogitInterface(Interface):
         Print the results of estimation
         """
         self.pylogit_model.print_summaries()
+
+    @requires_estimation
+    def null_log_likelihood(self):
+        """
+        Determine the null log likelihood of the model.
+        """
+        return self.pylogit_model.null_log_likelihood
+
+    @requires_estimation
+    def final_log_likelihood(self):
+        """
+        Determine the optimised log likelihood of the model.
+        """
+        return self.pylogit_model.log_likelihood
