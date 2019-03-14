@@ -198,3 +198,12 @@ class TestPylogitGrenobleEstimation():
         interface = grenoble_estimation
         parameters = interface.pylogit_model.params
         assert parameters[parameter] == pytest.approx(value, rel=1.0e-3)
+
+
+class TestPylogitRequiresEstimation():
+    @pytest.mark.parametrize('method', ['display_results'])
+    def test_requires_estimation(self, simple_multinomial_pylogit_interface,
+                                 method):
+        interface = simple_multinomial_pylogit_interface
+        with pytest.raises(choice_model.interface.interface.NotEstimated):
+            getattr(interface, method)()

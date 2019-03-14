@@ -164,3 +164,12 @@ class TestDataFile():
             )
         interface._write_data_file()
         assert data_file.read_text() == '1,2,3,4,1,1,1.0\n5,6,7,8,1,1,2.0\n'
+
+
+class TestAlogitRequiresEstimation():
+    @pytest.mark.parametrize('method', ['display_results'])
+    def test_requires_estimation(self, simple_multinomial_alogit_interface,
+                                 method):
+        interface = simple_multinomial_alogit_interface
+        with pytest.raises(choice_model.interface.interface.NotEstimated):
+            getattr(interface, method)()

@@ -2,7 +2,7 @@
 ALOGIT interface
 """
 
-from . import Interface
+from .interface import Interface, requires_estimation
 from .. import MultinomialLogit
 import numpy as np
 import os.path
@@ -333,6 +333,7 @@ class AlogitInterface(Interface):
 
         self.process = process
 
+    @requires_estimation
     def display_results(self):
         """
         Print the results of estimation

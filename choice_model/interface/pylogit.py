@@ -2,7 +2,7 @@
 pylogit interface
 """
 
-from . import Interface
+from .interface import Interface, requires_estimation
 from .. import MultinomialLogit
 from collections import OrderedDict
 import numpy as np
@@ -156,6 +156,7 @@ class PylogitInterface(Interface):
             init_vals=initial_parameters,
             method=method)
 
+    @requires_estimation
     def display_results(self):
         """
         Print the results of estimation

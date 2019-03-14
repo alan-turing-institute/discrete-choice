@@ -3,6 +3,7 @@ Base interface class definition
 """
 
 from .. import ChoiceModel
+from functools import wraps
 import pandas as pd
 
 
@@ -12,6 +13,7 @@ class Interface(object):
     def __init__(self, model):
         self._ensure_valid_model(model)
         self.model = model
+        self._estimated = False
 
         if not isinstance(model.data, pd.DataFrame):
             raise NoDataLoaded
@@ -48,3 +50,28 @@ class NoDataLoaded(Exception):
     def __init__(self):
         super().__init__('The model must be loaded with data before creating a'
                          ' pylogit interface')
+
+
+def requires_estimation(method):
+    """
+    Decorator to assert that model paramters must have been estimated before
+    calling a method.
+    """
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        if self._estimated:
+            return method(self, *args, **kwargs)
+        else:
+            raise NotEstimated
+    return wrapper
+
+
+class NotEstimated(Exception):
+    """
+    Exception raised when a method requires estimation to have been conducted
+    but it has not yet.
+    """
+    def __init__(self):
+        super().__init__(
+            'The model parameters must have been estimated to call this method'
+            )
