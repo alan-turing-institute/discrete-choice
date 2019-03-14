@@ -86,6 +86,18 @@ class Interface(object):
         raise NotImplementedError(
             'standard_errors has not been implemented in this class')
 
+    def t_values(self):
+        """
+        Determine the t values of the optimised parameters.
+
+        Returns:
+            (dict): A dictionary of t values. The keys are the parameter
+                names defined in the model, the values are the optimised
+                parameters.
+        """
+        raise NotImplementedError(
+            't_values has not been implemented in this class')
+
 
 class NoDataLoaded(Exception):
     """
