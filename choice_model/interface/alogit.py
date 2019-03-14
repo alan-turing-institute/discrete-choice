@@ -319,7 +319,7 @@ class AlogitInterface(Interface):
 
     def estimate(self):
         """
-        Estimate the model using ALOGIT
+        Estimate the parameters of the choice model using ALOGIT.
         """
         # Write the input and data files
         self._write_alo_file()
@@ -331,11 +331,15 @@ class AlogitInterface(Interface):
         process = subprocess.run([self.alogit_path, alo_path],
                                  capture_output=True)
 
-        # Print output
+        self.process = process
+
+    def display_results(self):
+        """
+        Print the results of estimation
+        """
+        process = self.process
         if process.returncode != 0:
             print('ALOGIT returned non-zero return code')
             print(process.stderr.decode('utf-8'))
         else:
             print(process.stdout.decode('utf-8'))
-
-        self.process = process

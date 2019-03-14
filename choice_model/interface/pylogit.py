@@ -149,9 +149,15 @@ class PylogitInterface(Interface):
 
     def estimate(self, method='BFGS'):
         """
-        Estimate the parameters of the choice model.
+        Estimate the parameters of the choice model using pylogit.
         """
         initial_parameters = np.zeros(self.model.number_of_parameters())
         self.pylogit_model.fit_mle(
             init_vals=initial_parameters,
             method=method)
+
+    def display_results(self):
+        """
+        Print the results of estimation
+        """
+        self.pylogit_model.print_summaries()

@@ -32,6 +32,13 @@ class Interface(object):
         raise NotImplementedError(
             'estimate has not been implemented in this class')
 
+    def display_results(self):
+        """
+        Print the results of estimation
+        """
+        raise NotImplementedError(
+            'display_results has not been implemented in this class')
+
 
 class NoDataLoaded(Exception):
     """
