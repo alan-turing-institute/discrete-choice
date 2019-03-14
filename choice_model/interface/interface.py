@@ -74,6 +74,18 @@ class Interface(object):
         raise NotImplementedError(
             'parameters has not been implemented in this class')
 
+    def standard_errors(self):
+        """
+        Determine the standard errors of the optimised parameters.
+
+        Returns:
+            (dict): A dictionary of standard errors. The keys are the parameter
+                names defined in the model, the values are the optimised
+                parameters.
+        """
+        raise NotImplementedError(
+            'standard_errors has not been implemented in this class')
+
 
 class NoDataLoaded(Exception):
     """
