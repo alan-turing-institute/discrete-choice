@@ -5,6 +5,8 @@ pylogit interface
 from .interface import Interface, requires_estimation
 from .. import MultinomialLogit
 from collections import OrderedDict
+from contextlib import redirect_stdout
+from io import StringIO
 import numpy as np
 import pylogit as pl
 
@@ -152,9 +154,17 @@ class PylogitInterface(Interface):
         Estimate the parameters of the choice model using pylogit.
         """
         initial_parameters = np.zeros(self.model.number_of_parameters())
-        self.pylogit_model.fit_mle(
-            init_vals=initial_parameters,
-            method=method)
+
+        # Capture stdout as this contains the estimation time
+        stdout = StringIO()
+        with redirect_stdout(stdout):
+            # Call the pylogit estimation routine
+            self.pylogit_model.fit_mle(
+                init_vals=initial_parameters,
+                method=method)
+
+        # Retain stdout message
+        self._message = stdout.getvalue()
 
         # Set estimated flag
         self._estimated = True
