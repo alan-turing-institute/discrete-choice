@@ -27,7 +27,13 @@ class AlogitInterface(Interface):
 
     Args:
         model (ChoiceModel): The choice model to create an interface for.
-        alogit_path (str, optional): Path to the alogit executable.
+        alogit_path (str): Path to the ALOGIT executable.
+        data_file (str, optional, default=None): Path of the file to hold model
+            data in the format ALOGIT expects. If 'None' then a prefix is
+            created based on the model title and appended with '.csv'
+        alo_file (str, optional, default=None): Path of the ALOGIT input (.alo)
+            file. If 'None' then a prefix is created based on the model title
+            and appended with '.alo'
     """
     _valid_models = [MultinomialLogit]
 
@@ -116,6 +122,9 @@ class AlogitInterface(Interface):
 
     @staticmethod
     def _abbreviate(string):
+        """
+        'Abbreviate' a string by truncating it.
+        """
         return string[:_MAX_CHARACTER_LENGTH]
 
     def abbreviate(self, string):
