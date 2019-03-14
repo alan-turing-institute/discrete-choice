@@ -156,6 +156,9 @@ class PylogitInterface(Interface):
             init_vals=initial_parameters,
             method=method)
 
+        # Set estimated flag
+        self._estimated = True
+
     @requires_estimation
     def display_results(self):
         """

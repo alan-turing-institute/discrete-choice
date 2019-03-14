@@ -331,6 +331,10 @@ class AlogitInterface(Interface):
         process = subprocess.run([self.alogit_path, alo_path],
                                  capture_output=True)
 
+        # Set estimated flag if ALOGIT ran successfully
+        if process.returncode == 0:
+            self._estimated = True
+
         self.process = process
 
     @requires_estimation
