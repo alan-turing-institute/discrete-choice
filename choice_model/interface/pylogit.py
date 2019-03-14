@@ -174,3 +174,7 @@ class PylogitInterface(Interface):
     @requires_estimation
     def parameters(self):
         return dict(self.pylogit_model.params)
+
+    @requires_estimation
+    def standard_errors(self):
+        return dict(self.pylogit_model.standard_errors)

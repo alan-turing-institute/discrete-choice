@@ -203,11 +203,33 @@ class TestPylogitGrenobleEstimation():
         ('pcost', -0.001127),
         ('pnon_linear', -0.003240)
         ])
-    def test_optimised_paramters(self, grenoble_estimation,
-                                 parameter, value):
+    def test_optimised_parameters(self, grenoble_estimation,
+                                  parameter, value):
         interface = grenoble_estimation
         parameters = interface.parameters()
         assert parameters[parameter] == pytest.approx(value, rel=1.0e-3)
+
+    @pytest.mark.parametrize('parameter,error', [
+        ('cpt', 0.390846),
+        ('ccycle', 0.323384),
+        ('cwalk', 0.314923),
+        ('cpass', 0.571899),
+        ('phead_of_household', 0.236262),
+        ('porigin_walk', 0.001276),
+        ('pcar_competition', 0.350013),
+        ('phas_car', 0.468693),
+        ('pfemale_passenger', 0.333083),
+        ('pfemale_cycle', 0.231491),
+        ('pcentral_zone', 0.461484),
+        ('pmanual_worker', 0.219562),
+        ('ptime', 0.000111),
+        ('pcost', 0.000402),
+        ('pnon_linear', 0.000313)
+        ])
+    def test_standard_errors(self, grenoble_estimation, parameter, error):
+        interface = grenoble_estimation
+        errors = interface.standard_errors()
+        assert errors[parameter] == pytest.approx(error, rel=1.0e-2)
 
 
 class TestPylogitRequiresEstimation():
@@ -215,7 +237,8 @@ class TestPylogitRequiresEstimation():
         'display_results',
         'null_log_likelihood',
         'final_log_likelihood',
-        'parameters'
+        'parameters',
+        'standard_errors'
         ])
     def test_requires_estimation(self, simple_multinomial_pylogit_interface,
                                  method):
