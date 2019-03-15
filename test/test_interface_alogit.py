@@ -215,6 +215,78 @@ class TestPylogitGrenobleEstimation():
         assert interface.final_log_likelihood() == pytest.approx(-828.5038,
                                                                  1.0e-4)
 
+    @pytest.mark.parametrize('parameter,value', [
+        ('cpass', -2.731),
+        ('cwalk', 2.100),
+        ('ccycle', .5976),
+        ('cpt', 1.098),
+        ('pfemale_passenger', .8481),
+        ('phas_car', 1.123),
+        ('pmanual_worker', .7553),
+        ('pcentral_zone', -1.481),
+        ('pfemale_cycle', -.9190),
+        ('pcar_competition', 2.655),
+        ('porigin_walk', -.1890E-02),
+        ('phead_of_household', -.8310),
+        ('pnon_linear', -.3240E-02),
+        ('pcost', -.1127E-02),
+        ('ptime', -.3840E-03)
+        ])
+    def test_optimised_parameters(self, grenoble_estimation_example,
+                                  parameter, value):
+        interface = grenoble_estimation_example
+        parameters = interface.parameters()
+        assert parameters[parameter] == pytest.approx(value, rel=1.0e-3)
+
+    @pytest.mark.parametrize('parameter,error', [
+        ('cpass', .650),
+        ('cwalk', .312),
+        ('ccycle', .325),
+        ('cpt', .365),
+        ('pfemale_passenger', .343),
+        ('phas_car', .501),
+        ('pmanual_worker', .234),
+        ('pcentral_zone', .488),
+        ('pfemale_cycle', .246),
+        ('pcar_competition', .342),
+        ('porigin_walk', .128E-02),
+        ('phead_of_household', .219),
+        ('pnon_linear', .333E-03),
+        ('pcost', .411E-03),
+        ('ptime', .958E-04)
+        ])
+    def test_standard_errors(self, grenoble_estimation_example, parameter,
+                             error):
+        interface = grenoble_estimation_example
+        errors = interface.standard_errors()
+        assert errors[parameter] == pytest.approx(error, rel=1.0e-2)
+
+    @pytest.mark.parametrize('parameter,t_value', [
+        ('cpass', -4.2),
+        ('cwalk', 6.7),
+        ('ccycle', 1.8),
+        ('cpt', 3.0),
+        ('pfemale_passenger', 2.5),
+        ('phas_car', 2.2),
+        ('pmanual_worker', 3.2),
+        ('pcentral_zone', -3.0),
+        ('pfemale_cycle', -3.7),
+        ('pcar_competition', 7.8),
+        ('porigin_walk', -1.5),
+        ('phead_of_household', -3.8),
+        ('pnon_linear', -9.7),
+        ('pcost', -2.7),
+        ('ptime', -4.0)
+        ])
+    def test_t_values(self, grenoble_estimation_example, parameter, t_value):
+        interface = grenoble_estimation_example
+        t_values = interface.t_values()
+        assert t_values[parameter] == pytest.approx(t_value, rel=1.0e-2)
+
+    def test_estimation_time(self, grenoble_estimation_example):
+        interface = grenoble_estimation_example
+        assert interface.estimation_time() > 0.0
+
 
 @pytest.fixture(scope='module')
 def grenoble_estimation_example():
