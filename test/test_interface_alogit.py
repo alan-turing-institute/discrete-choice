@@ -260,6 +260,29 @@ class TestPylogitGrenobleEstimationExample():
         parameters = interface.parameters()
         assert parameters[parameter] == value
 
+    @pytest.mark.parametrize('parameter,error', [
+        ('cpass', .650),
+        ('cwalk', .312),
+        ('ccycle', .325),
+        ('cpt', .365),
+        ('pfemale_passenger', .343),
+        ('phas_car', .501),
+        ('pmanual_worker', .234),
+        ('pcentral_zone', .488),
+        ('pfemale_cycle', .246),
+        ('pcar_competition', .342),
+        ('porigin_walk', .128E-02),
+        ('phead_of_household', .219),
+        ('pnon_linear', .333E-03),
+        ('pcost', .411E-03),
+        ('ptime', .958E-04)
+        ])
+    def test_standard_errors(self, grenoble_estimation_example,
+                             parameter, error):
+        interface = grenoble_estimation_example
+        errors = interface.standard_errors()
+        assert errors[parameter] == error
+
 
 class TestAlogitRequiresEstimation():
     @pytest.mark.parametrize('method', [

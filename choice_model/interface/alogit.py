@@ -395,3 +395,7 @@ class AlogitInterface(Interface):
     @requires_estimation
     def parameters(self):
         return self._parameters
+
+    @requires_estimation
+    def standard_errors(self):
+        return self._errors
