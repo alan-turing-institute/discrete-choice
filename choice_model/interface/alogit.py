@@ -355,12 +355,25 @@ class AlogitInterface(Interface):
                 os.path.abspath(self.alo_file)
                 )[0] + '.LOG'
 
+        # Get results from LOG file
+        self._parameters = {}
+        self._errors = {}
+        self._t_values = {}
         with open(file_name, 'r') as outfile:
             for line in outfile:
                 if 'Final value of Log Likelihood' in line:
                     self._final_log_likelihood = float(line.split()[-1])
                 elif 'Initial Log Likelihood' in line:
                     self._null_log_likelihood = float(line.split()[-1])
+                elif 'Coefficient   Estimate   Std. Error \'t\' ratio' in line:
+                    for result in range(self.model.number_of_parameters(
+                            include_intercepts=True)):
+                        result_line = outfile.readline().split()
+                        # Get model parameter name back from abbreviation
+                        parameter = self.elongate(result_line[0])
+                        self._parameters[parameter] = float(result_line[1])
+                        self._errors[parameter] = float(result_line[2])
+                        self._t_values[parameter] = float(result_line[3])
 
     @requires_estimation
     def display_results(self):
@@ -378,3 +391,7 @@ class AlogitInterface(Interface):
     @requires_estimation
     def final_log_likelihood(self):
         return self._final_log_likelihood
+
+    @requires_estimation
+    def parameters(self):
+        return self._parameters

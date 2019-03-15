@@ -237,6 +237,29 @@ class TestPylogitGrenobleEstimationExample():
         interface = grenoble_estimation_example
         assert interface.final_log_likelihood() == -828.5038
 
+    @pytest.mark.parametrize('parameter,value', [
+        ('cpass', -2.731),
+        ('cwalk', 2.100),
+        ('ccycle', .5976),
+        ('cpt', 1.098),
+        ('pfemale_passenger', .8481),
+        ('phas_car', 1.123),
+        ('pmanual_worker', .7553),
+        ('pcentral_zone', -1.481),
+        ('pfemale_cycle', -.9190),
+        ('pcar_competition', 2.655),
+        ('porigin_walk', -.1890E-02),
+        ('phead_of_household', -.8310),
+        ('pnon_linear', -.3240E-02),
+        ('pcost', -.1127E-02),
+        ('ptime', -.3840E-03)
+        ])
+    def test_optimised_parameters(self, grenoble_estimation_example,
+                                  parameter, value):
+        interface = grenoble_estimation_example
+        parameters = interface.parameters()
+        assert parameters[parameter] == value
+
 
 class TestAlogitRequiresEstimation():
     @pytest.mark.parametrize('method', [
