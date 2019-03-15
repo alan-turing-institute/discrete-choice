@@ -98,6 +98,16 @@ class Interface(object):
         raise NotImplementedError(
             't_values has not been implemented in this class')
 
+    def estimation_time(self):
+        """
+        Report the estimation time for the interface in seconds
+
+        Returns:
+            (float): The estimation time in seconds.
+        """
+        raise NotImplementedError(
+            'estimation_time has not been implemented in this class')
+
 
 class NoDataLoaded(Exception):
     """

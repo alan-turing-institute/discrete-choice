@@ -253,6 +253,10 @@ class TestPylogitGrenobleEstimation():
         t_values = interface.t_values()
         assert t_values[parameter] == pytest.approx(t_value, rel=1.0e-2)
 
+    def test_estimation_time(self, grenoble_estimation):
+        interface = grenoble_estimation
+        assert interface.estimation_time() > 0.0
+
 
 class TestPylogitRequiresEstimation():
     @pytest.mark.parametrize('method', [
@@ -261,7 +265,8 @@ class TestPylogitRequiresEstimation():
         'final_log_likelihood',
         'parameters',
         'standard_errors',
-        't_values'
+        't_values',
+        'estimation_time'
         ])
     def test_requires_estimation(self, simple_multinomial_pylogit_interface,
                                  method):

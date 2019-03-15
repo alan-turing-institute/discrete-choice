@@ -163,8 +163,9 @@ class PylogitInterface(Interface):
                 init_vals=initial_parameters,
                 method=method)
 
-        # Retain stdout message
-        self._message = stdout.getvalue()
+        # Get estimation time from stdout
+        self._estimation_time = float(
+            stdout.getvalue().splitlines()[2].split()[-2])
 
         # Set estimated flag
         self._estimated = True
@@ -192,3 +193,7 @@ class PylogitInterface(Interface):
     @requires_estimation
     def t_values(self):
         return dict(self.pylogit_model.tvalues)
+
+    @requires_estimation
+    def estimation_time(self):
+        return self._estimation_time
