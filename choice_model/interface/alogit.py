@@ -2,7 +2,7 @@
 ALOGIT interface
 """
 
-from . import Interface
+from .interface import Interface, requires_estimation
 from .. import MultinomialLogit
 import numpy as np
 import os.path
@@ -27,7 +27,13 @@ class AlogitInterface(Interface):
 
     Args:
         model (ChoiceModel): The choice model to create an interface for.
-        alogit_path (str, optional): Path to the alogit executable.
+        alogit_path (str): Path to the ALOGIT executable.
+        data_file (str, optional, default=None): Path of the file to hold model
+            data in the format ALOGIT expects. If 'None' then a prefix is
+            created based on the model title and appended with '.csv'
+        alo_file (str, optional, default=None): Path of the ALOGIT input (.alo)
+            file. If 'None' then a prefix is created based on the model title
+            and appended with '.alo'
     """
     _valid_models = [MultinomialLogit]
 
@@ -116,6 +122,9 @@ class AlogitInterface(Interface):
 
     @staticmethod
     def _abbreviate(string):
+        """
+        'Abbreviate' a string by truncating it.
+        """
         return string[:_MAX_CHARACTER_LENGTH]
 
     def abbreviate(self, string):
@@ -310,7 +319,7 @@ class AlogitInterface(Interface):
 
     def estimate(self):
         """
-        Estimate the model using ALOGIT
+        Estimate the parameters of the choice model using ALOGIT.
         """
         # Write the input and data files
         self._write_alo_file()
@@ -322,11 +331,81 @@ class AlogitInterface(Interface):
         process = subprocess.run([self.alogit_path, alo_path],
                                  capture_output=True)
 
-        # Print output
+        # Set estimated flag if ALOGIT ran successfully
+        if process.returncode == 0:
+            self._estimated = True
+            self._parse_output_file()
+
+        self.process = process
+
+    def _parse_output_file(self, log_file_path=None):
+        """
+        Collect estimation data from the ALOGIT output file
+
+        Args:
+            log_file_path (str, optional): Path to the log file (used for
+                testing).
+        """
+        if log_file_path:
+            file_name = log_file_path
+        else:
+            # The filename and path is the same as the input but replacing the
+            # extension .alo with .LOG
+            file_name = os.path.splitext(
+                os.path.abspath(self.alo_file)
+                )[0] + '.LOG'
+
+        # Get results from LOG file
+        self._parameters = {}
+        self._errors = {}
+        self._t_values = {}
+        with open(file_name, 'r') as outfile:
+            for line in outfile:
+                if 'Final value of Log Likelihood' in line:
+                    self._final_log_likelihood = float(line.split()[-1])
+                elif 'Initial Log Likelihood' in line:
+                    self._null_log_likelihood = float(line.split()[-1])
+                elif 'Coefficient   Estimate   Std. Error \'t\' ratio' in line:
+                    for result in range(self.model.number_of_parameters(
+                            include_intercepts=True)):
+                        result_line = outfile.readline().split()
+                        # Get model parameter name back from abbreviation
+                        parameter = self.elongate(result_line[0])
+                        self._parameters[parameter] = float(result_line[1])
+                        self._errors[parameter] = float(result_line[2])
+                        self._t_values[parameter] = float(result_line[3])
+                elif 'Estimation time' in line:
+                    self._estimation_time = float(line.split()[-2])
+
+    @requires_estimation
+    def display_results(self):
+        process = self.process
         if process.returncode != 0:
             print('ALOGIT returned non-zero return code')
             print(process.stderr.decode('utf-8'))
         else:
             print(process.stdout.decode('utf-8'))
 
-        self.process = process
+    @requires_estimation
+    def null_log_likelihood(self):
+        return self._null_log_likelihood
+
+    @requires_estimation
+    def final_log_likelihood(self):
+        return self._final_log_likelihood
+
+    @requires_estimation
+    def parameters(self):
+        return self._parameters
+
+    @requires_estimation
+    def standard_errors(self):
+        return self._errors
+
+    @requires_estimation
+    def t_values(self):
+        return self._t_values
+
+    @requires_estimation
+    def estimation_time(self):
+        return self._estimation_time

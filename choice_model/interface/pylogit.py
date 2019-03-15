@@ -2,9 +2,11 @@
 pylogit interface
 """
 
-from . import Interface
+from .interface import Interface, requires_estimation
 from .. import MultinomialLogit
 from collections import OrderedDict
+from contextlib import redirect_stdout
+from io import StringIO
 import numpy as np
 import pylogit as pl
 
@@ -149,9 +151,49 @@ class PylogitInterface(Interface):
 
     def estimate(self, method='BFGS'):
         """
-        Estimate the parameters of the choice model.
+        Estimate the parameters of the choice model using pylogit.
         """
         initial_parameters = np.zeros(self.model.number_of_parameters())
-        self.pylogit_model.fit_mle(
-            init_vals=initial_parameters,
-            method=method)
+
+        # Capture stdout as this contains the estimation time
+        stdout = StringIO()
+        with redirect_stdout(stdout):
+            # Call the pylogit estimation routine
+            self.pylogit_model.fit_mle(
+                init_vals=initial_parameters,
+                method=method)
+
+        # Get estimation time from stdout
+        self._estimation_time = float(
+            stdout.getvalue().splitlines()[2].split()[-2])
+
+        # Set estimated flag
+        self._estimated = True
+
+    @requires_estimation
+    def display_results(self):
+        self.pylogit_model.print_summaries()
+
+    @requires_estimation
+    def null_log_likelihood(self):
+        return self.pylogit_model.null_log_likelihood
+
+    @requires_estimation
+    def final_log_likelihood(self):
+        return self.pylogit_model.log_likelihood
+
+    @requires_estimation
+    def parameters(self):
+        return dict(self.pylogit_model.params)
+
+    @requires_estimation
+    def standard_errors(self):
+        return dict(self.pylogit_model.standard_errors)
+
+    @requires_estimation
+    def t_values(self):
+        return dict(self.pylogit_model.tvalues)
+
+    @requires_estimation
+    def estimation_time(self):
+        return self._estimation_time
