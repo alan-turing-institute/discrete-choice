@@ -277,11 +277,33 @@ class TestPylogitGrenobleEstimationExample():
         ('pcost', .411E-03),
         ('ptime', .958E-04)
         ])
-    def test_standard_errors(self, grenoble_estimation_example,
-                             parameter, error):
+    def test_standard_errors(self, grenoble_estimation_example, parameter,
+                             error):
         interface = grenoble_estimation_example
         errors = interface.standard_errors()
         assert errors[parameter] == error
+
+    @pytest.mark.parametrize('parameter,t_value', [
+        ('cpass', -4.2),
+        ('cwalk', 6.7),
+        ('ccycle', 1.8),
+        ('cpt', 3.0),
+        ('pfemale_passenger', 2.5),
+        ('phas_car', 2.2),
+        ('pmanual_worker', 3.2),
+        ('pcentral_zone', -3.0),
+        ('pfemale_cycle', -3.7),
+        ('pcar_competition', 7.8),
+        ('porigin_walk', -1.5),
+        ('phead_of_household', -3.8),
+        ('pnon_linear', -9.7),
+        ('pcost', -2.7),
+        ('ptime', -4.0)
+        ])
+    def test_t_values(self, grenoble_estimation_example, parameter, t_value):
+        interface = grenoble_estimation_example
+        t_values = interface.t_values()
+        assert t_values[parameter] == t_value
 
 
 class TestAlogitRequiresEstimation():
