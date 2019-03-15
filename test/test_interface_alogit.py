@@ -314,7 +314,11 @@ class TestAlogitRequiresEstimation():
     @pytest.mark.parametrize('method', [
         'display_results',
         'null_log_likelihood',
-        'final_log_likelihood'
+        'final_log_likelihood',
+        'parameters',
+        'standard_errors',
+        't_values',
+        'estimation_time'
         ])
     def test_requires_estimation(self, simple_multinomial_alogit_interface,
                                  method):
