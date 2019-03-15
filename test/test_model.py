@@ -59,13 +59,14 @@ class TestChoiceModel():
         model = simple_model
         assert model.number_of_choices() == 2
 
-    def test_number_of_parameters(self, simple_model):
+    @pytest.mark.parametrize('include_intercepts,result', [
+        (True, 4),
+        (False, 3)
+        ])
+    def test_number_of_parameters(self, simple_model, include_intercepts,
+                                  result):
         model = simple_model
-        assert model.number_of_parameters() == 4
-
-    def test_number_of_parameters_excluding_intercepts(self, simple_model):
-        model = simple_model
-        assert model.number_of_parameters(include_intercepts=False) == 3
+        assert model.number_of_parameters(include_intercepts) == result
 
 
 def test_missing_yaml_key():
