@@ -216,6 +216,28 @@ class TestPylogitGrenobleEstimation():
                                                                  1.0e-4)
 
 
+@pytest.fixture(scope='module')
+def grenoble_estimation_example():
+    with open(main_data_dir+'grenoble.yml') as model_file,\
+            open(main_data_dir+'grenoble.csv') as data_file:
+        model = choice_model.MultinomialLogit.from_yaml(model_file)
+        model.load_data(data_file)
+    interface = choice_model.AlogitInterface(model, './dummy')
+    interface._parse_output_file(data_dir+'Grenoble.LOG')
+    interface._estimated = True
+    return interface
+
+
+class TestPylogitGrenobleEstimationExample():
+    def test_null_log_likelihood(self, grenoble_estimation_example):
+        interface = grenoble_estimation_example
+        assert interface.null_log_likelihood() == -1452.5186
+
+    def test_final_log_likelihood(self, grenoble_estimation_example):
+        interface = grenoble_estimation_example
+        assert interface.final_log_likelihood() == -828.5038
+
+
 class TestAlogitRequiresEstimation():
     @pytest.mark.parametrize('method', [
         'display_results',

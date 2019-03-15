@@ -338,15 +338,22 @@ class AlogitInterface(Interface):
 
         self.process = process
 
-    def _parse_output_file(self):
+    def _parse_output_file(self, log_file_path=None):
         """
         Collect estimation data from the ALOGIT output file
+
+        Args:
+            log_file_path (str, optional): Path to the log file (used for
+                testing).
         """
-        # The filename and path is the same as the input but replacing the
-        # extension .alo with .LOG
-        file_name = os.path.splitext(
-            os.path.abspath(self.alo_file)
-            )[0] + '.LOG'
+        if log_file_path:
+            file_name = log_file_path
+        else:
+            # The filename and path is the same as the input but replacing the
+            # extension .alo with .LOG
+            file_name = os.path.splitext(
+                os.path.abspath(self.alo_file)
+                )[0] + '.LOG'
 
         with open(file_name, 'r') as outfile:
             for line in outfile:
