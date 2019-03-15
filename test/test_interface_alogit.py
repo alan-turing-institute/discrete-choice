@@ -305,6 +305,10 @@ class TestPylogitGrenobleEstimationExample():
         t_values = interface.t_values()
         assert t_values[parameter] == t_value
 
+    def test_estimation_time(self, grenoble_estimation_example):
+        interface = grenoble_estimation_example
+        assert interface.estimation_time() == 0.03
+
 
 class TestAlogitRequiresEstimation():
     @pytest.mark.parametrize('method', [

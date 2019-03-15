@@ -374,6 +374,8 @@ class AlogitInterface(Interface):
                         self._parameters[parameter] = float(result_line[1])
                         self._errors[parameter] = float(result_line[2])
                         self._t_values[parameter] = float(result_line[3])
+                elif 'Estimation time' in line:
+                    self._estimation_time = float(line.split()[-2])
 
     @requires_estimation
     def display_results(self):
@@ -403,3 +405,7 @@ class AlogitInterface(Interface):
     @requires_estimation
     def t_values(self):
         return self._t_values
+
+    @requires_estimation
+    def estimation_time(self):
+        return self._estimation_time
