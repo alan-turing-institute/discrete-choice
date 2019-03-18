@@ -21,17 +21,23 @@ model = choice_model.synthetic_model(
     )
 
 
-def scaling(interface, model, records):
+def scaling(interface, model, records, repeats):
     estimation_times = []
     for number_of_records in records:
-        data = choice_model.synthetic_data(
-            model=model,
-            number_of_records=number_of_records
-            )
-        model.load_data(data)
-        solver = interface(model)
-        solver.estimate()
-        estimation_times.append(solver.estimation_time())
+        average = 0.
+        for repeat in range(repeats):
+            data = choice_model.synthetic_data(
+                model=model,
+                number_of_records=number_of_records
+                )
+            model.load_data(data)
+            solver = interface(model)
+            solver.estimate()
+
+            average += solver.estimation_time()
+            del data
+            del solver
+        estimation_times.append(average/repeats)
 
     return estimation_times
 
@@ -45,9 +51,9 @@ else:
 records = np.arange(1000, 22000, 2000)
 estimation_times = []
 for interface in interfaces:
-    estimation_times.append(scaling(interface, model, records))
+    estimation_times.append(scaling(interface, model, records, 5))
 
-fig, ax = plt.subfigs()
+fig, ax = plt.subplots()
 ax.set_xlabel('number of observations')
 ax.set_ylabel('estimation time / s')
 for interface, times in zip(interfaces, estimation_times):
@@ -55,5 +61,5 @@ for interface, times in zip(interfaces, estimation_times):
     print(list(zip(records, times)))
     plt.plot(records, times, '-x', label=interface.name)
 
-fig.tightlayout()
+fig.tight_layout()
 fig.savefig('scaling_observations.pdf', format='pdf')
