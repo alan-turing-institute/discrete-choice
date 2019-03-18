@@ -2,6 +2,7 @@
 Choice model definitions.
 """
 
+from io import IOBase
 import pandas as pd
 from .utility import Utility
 import yaml
@@ -128,17 +129,26 @@ class ChoiceModel(object):
         else:
             raise MissingYamlKey(key)
 
-    def load_data(self, stream):
+    def load_data(self, data_or_file):
         """
         Load data into pandas dataframe.
 
         Args:
-            stream (stream): csv data stream containing model data.
+            data_or_file (DataFrame or FileLike): Pandas dataframe or file
+                object containing the data to load into the model.
         """
-        self.data = pd.read_csv(stream)
+        if isinstance(data_or_file, pd.DataFrame):
+            self.data = data_or_file
+        elif isinstance(data_or_file, IOBase):
+            self.data = pd.read_csv(data_or_file)
+        else:
+            raise TypeError(
+                'The argument to load_data must be a pandas dataframe or a '
+                'file-like object'
+                )
 
         # Ensure that all required fields are defined in the dataframe
-        self._check_fields(stream)
+        self._check_fields(data_or_file)
 
     def _check_fields(self, stream):
         """
