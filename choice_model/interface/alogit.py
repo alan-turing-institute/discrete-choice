@@ -36,6 +36,7 @@ class AlogitInterface(Interface):
             and appended with '.alo'
     """
     _valid_models = [MultinomialLogit]
+    name = 'ALOGIT'
 
     def __init__(self, model, alogit_path, data_file=None, alo_file=None):
         super().__init__(model)

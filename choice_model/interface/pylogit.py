@@ -22,6 +22,7 @@ _CHOICE_ID_COL = 'choice_id'
 
 class PylogitInterface(Interface):
     _valid_models = [MultinomialLogit]
+    name = 'pylogit'
 
     def __init__(self, model):
         super().__init__(model)
