@@ -22,9 +22,6 @@ model = choice_model.synthetic_model(
 
 
 def scaling(interface, model, records):
-    if not isinstance(interface, choice_model.Interface):
-        raise TypeError
-
     estimation_times = []
     for number_of_records in records:
         data = choice_model.synthetic_data(
