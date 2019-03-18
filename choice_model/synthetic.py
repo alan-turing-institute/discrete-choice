@@ -3,6 +3,9 @@ Routines for creating synthetic models and corresponding data
 """
 
 from .model import MultinomialLogit
+import numpy as np
+import numpy.random as random
+import pandas as pd
 
 
 def synthetic_model(title, number_of_alternatives, number_of_variables):
@@ -69,3 +72,43 @@ def synthetic_model(title, number_of_alternatives, number_of_variables):
         specification=specification
         )
     return model
+
+
+def synthetic_data(model, number_of_records):
+    """
+    Generate synthetic data for a model.
+
+    Args:
+        model (ChoiceModel): The choice model object to create synthetic
+            observatiosn for.
+        number_of_records (int): The number of synthetic observations to
+            create.
+
+    Returns:
+        (DataFrame): A pandas dataframe of synthetic data that can be
+            loaded into model.
+    """
+    # Create dataframe with the necessary column labels
+    data = pd.DataFrame(
+        columns=(model.all_variable_fields() +
+                 model.availability_fields() +
+                 [model.choice_column])
+        )
+
+    # Populate the choice column with choices picked uniformly from the
+    # models alternatives
+    alternatives = model.choices
+    data[model.choice_column] = random.choice(alternatives,
+                                              size=number_of_records)
+
+    # Set all availability columns to 1 (available)
+    for column in model.availability_fields():
+        data[column] = np.full(shape=number_of_records,
+                               fill_value=1)
+
+    # Fill all variable columns with uniform random numbers in the range
+    # [0,1)
+    for column in model.all_variable_fields():
+        data[column] = random.random(size=number_of_records)
+
+    return data

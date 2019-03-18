@@ -192,6 +192,12 @@ class ChoiceModel(object):
             ]
         return choice_independent + choice_dependent
 
+    def availability_fields(self):
+        """
+        Produce a list of all availability fields expected in the data.
+        """
+        return list(self.availability.values())
+
     def number_of_choices(self):
         """
         Determine the number of choices/alternatives in the model
