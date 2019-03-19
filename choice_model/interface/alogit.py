@@ -110,11 +110,20 @@ class AlogitInterface(Interface):
             # Count number of duplicates of abbreviation
             duplicate_count = abbreviations.count(abbreviation)
             if duplicate_count > 1:
-                # Replace each occurance usings numbers 1--duplicate_count
+                # Determine length of number and hence create an appropiate
+                # integer string format
+                number_length = len(str(duplicate_count))
+                number_format = '{{:0{}d}}'.format(number_length)
+                abbreviation_format = '{}' + number_format
+                truncated = abbreviation[:-number_length]
+                # Replace each occurance usings numbers 01--duplicate_count
                 for occurance in range(1, duplicate_count+1):
                     index = abbreviations.index(abbreviation)
                     abbreviations[index] = (
-                        abbreviation[:-1] + str(occurance)
+                        abbreviation_format.format(
+                            truncated,
+                            occurance
+                            )
                         )
 
         self.abbreviation = dict(zip(full, abbreviations))
