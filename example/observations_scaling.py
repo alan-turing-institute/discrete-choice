@@ -12,6 +12,7 @@ sys.path.insert(0, project_dir)
 import choice_model # noqa
 import matplotlib.pyplot as plt # noqa
 import numpy as np # noqa
+import pandas as pd # noqa
 import platform # noqa
 
 model = choice_model.synthetic_model(
@@ -21,7 +22,7 @@ model = choice_model.synthetic_model(
     )
 
 
-def scaling(interface, model, records, repeats):
+def scaling(interface, model, records, repeats, interface_args):
     estimation_times = []
     for number_of_records in records:
         average = 0.
@@ -31,7 +32,7 @@ def scaling(interface, model, records, repeats):
                 number_of_records=number_of_records
                 )
             model.load_data(data)
-            solver = interface(model)
+            solver = interface(model, **interface_args)
             solver.estimate()
 
             average += solver.estimation_time()
@@ -45,21 +46,27 @@ def scaling(interface, model, records, repeats):
 if platform.system() == 'Windows':
     interfaces = [choice_model.PylogitInterface,
                   choice_model.AlogitInterface]
+    interface_args = {'alogit_path': r'D:\Alo45.exe'}
 else:
     interfaces = [choice_model.PylogitInterface]
+    interface_args = {}
 
-records = np.arange(1000, 22000, 2000)
-estimation_times = []
+records = np.arange(2000, 22000, 2000)
+df = pd.DataFrame()
+df['number of observations'] = records
 for interface in interfaces:
-    estimation_times.append(scaling(interface, model, records, 5))
+    df[interface.name] = scaling(interface, model, records, 5, interface_args)
+
+with open('scaling_observations.csv', 'w') as csv_file:
+    df.to_csv(csv_file,
+              index=False,
+              line_terminator='\n')
 
 fig, ax = plt.subplots()
 ax.set_xlabel('number of observations')
 ax.set_ylabel('estimation time / s')
-for interface, times in zip(interfaces, estimation_times):
-    print(interface.name)
-    print(list(zip(records, times)))
-    plt.plot(records, times, '-x', label=interface.name)
+for interface in interfaces:
+    plt.plot(records, df[interface.name], '-x', label=interface.name)
 
 fig.tight_layout()
 fig.savefig('scaling_observations.pdf', format='pdf')
