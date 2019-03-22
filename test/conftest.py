@@ -35,6 +35,14 @@ def simple_multinomial_model(data_dir):
         return choice_model.MultinomialLogit.from_yaml(yaml_file)
 
 
+@pytest.fixture(scope="class")
+def simple_model_with_data(simple_model, data_dir):
+    model = simple_model
+    with open(data_dir+'simple.csv', 'r') as data_file:
+        model.load_data(data_file)
+    return model
+
+
 @pytest.fixture(scope='session')
 def simple_multinomial_model_with_data(simple_multinomial_model, data_dir):
     model = simple_multinomial_model
