@@ -26,8 +26,10 @@ model = choice_model.synthetic_model(
 def scaling(interface, model, records, repeats, interface_args):
     df = pd.DataFrame(columns=records)
     for number_of_records in records:
+        print('Number of observations: {}'.format(number_of_records))
         estimation_times = []
         for repeat in range(repeats):
+            print('\trepeat: {}'.format(repeat))
             data = choice_model.synthetic_data(
                 model=model,
                 number_of_records=number_of_records
@@ -70,6 +72,7 @@ fig, ax = plt.subplots()
 ax.set_xlabel('number of observations')
 ax.set_ylabel('estimation time / s')
 for interface in interfaces:
+    print('Interface: {}'.format(interface.name))
     # Plot the mean estimation times and errors
     results = estimation_times[interface.name]
     ax.errorbar(results.columns, results.mean(),
