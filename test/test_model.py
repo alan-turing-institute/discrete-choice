@@ -1,5 +1,5 @@
 import choice_model
-import pandas
+import pandas as pd
 import pytest
 
 
@@ -10,7 +10,7 @@ class TestChoiceModel():
 
     def test_model_data(self, simple_model_with_data, data_dir):
         model = simple_model_with_data
-        assert all(model.data == pandas.read_csv(data_dir+'simple.csv'))
+        assert all(model.data == pd.read_csv(data_dir+'simple.csv'))
 
     def test_model_choices(self, simple_model):
         model = simple_model
@@ -41,13 +41,14 @@ class TestChoiceModel():
         model = simple_model
         assert model.number_of_choices() == 2
 
-    def test_number_of_parameters(self, simple_model):
+    @pytest.mark.parametrize('include_intercepts,result', [
+        (True, 4),
+        (False, 3)
+        ])
+    def test_number_of_parameters(self, simple_model, include_intercepts,
+                                  result):
         model = simple_model
-        assert model.number_of_parameters() == 4
-
-    def test_number_of_parameters_excluding_intercepts(self, simple_model):
-        model = simple_model
-        assert model.number_of_parameters(include_intercepts=False) == 3
+        assert model.number_of_parameters(include_intercepts) == result
 
 
 def test_missing_yaml_key(data_dir):
@@ -74,6 +75,21 @@ def test_missing_field(data_dir):
                 open(data_dir+'missing_field.csv', 'r') as data_file:
             model = choice_model.ChoiceModel.from_yaml(yaml_file)
             model.load_data(data_file)
+
+
+class TestData():
+    def test_type_error(self, simple_model):
+        with pytest.raises(TypeError):
+            simple_model.load_data(5)
+
+    def test_csv_file(self, simple_model):
+        with open(data_dir+'simple.csv', 'r') as data_file:
+            simple_model.load_data(data_file)
+
+    def test_dataframe(self, simple_model):
+        with open(data_dir+'simple.csv', 'r') as data_file:
+            data = pd.read_csv(data_file)
+        simple_model.load_data(data)
 
 
 class TestMultinomialLogit():

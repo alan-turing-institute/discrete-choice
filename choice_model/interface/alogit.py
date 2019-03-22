@@ -27,32 +27,35 @@ class AlogitInterface(Interface):
 
     Args:
         model (ChoiceModel): The choice model to create an interface for.
+
+    Keyword Args:
         alogit_path (str): Path to the ALOGIT executable.
-        data_file (str, optional, default=None): Path of the file to hold model
-            data in the format ALOGIT expects. If 'None' then a prefix is
-            created based on the model title and appended with '.csv'
-        alo_file (str, optional, default=None): Path of the ALOGIT input (.alo)
-            file. If 'None' then a prefix is created based on the model title
-            and appended with '.alo'
+        data_file (str, optional): Path of the file to hold model data in the
+            format ALOGIT expects. If not supplied then a prefix is created
+            based on the model title and appended with '.csv'
+        alo_file (str, optional) Path of the ALOGIT input (.alo)
+            file. If not supplied then a prefix is created based on the model
+            title and appended with '.alo'
     """
     _valid_models = [MultinomialLogit]
+    name = 'ALOGIT'
 
-    def __init__(self, model, alogit_path, data_file=None, alo_file=None):
+    def __init__(self, model, **kwargs):
         super().__init__(model)
 
-        self.alogit_path = os.path.abspath(alogit_path)
+        self.alogit_path = os.path.abspath(kwargs['alogit_path'])
 
         # Define a file prefix for the input and data files
         prefix = self.model.title.split(' ')[0]
         # Define file names
-        if data_file is None:
+        if 'data_file' in kwargs:
+            self.data_file = kwargs['data_file']
+        else:
             self.data_file = prefix + '.csv'
+        if 'alo_file' in kwargs:
+            self.alo_file = kwargs['alo_file']
         else:
-            self.data_file = data_file
-        if alo_file is None:
             self.alo_file = prefix + '.alo'
-        else:
-            self.alo_file = alo_file
 
         # Create label abbreviations using ALOGIT's maximum character length
         self._create_abbreviations()
