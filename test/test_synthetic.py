@@ -1,8 +1,6 @@
-from .context import add_project_path
 import choice_model
 import pandas as pd
 import pytest
-add_project_path()
 
 
 @pytest.fixture(scope='module')

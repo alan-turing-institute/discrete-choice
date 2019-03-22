@@ -82,11 +82,11 @@ class TestData():
         with pytest.raises(TypeError):
             simple_model.load_data(5)
 
-    def test_csv_file(self, simple_model):
+    def test_csv_file(self, simple_model, data_dir):
         with open(data_dir+'simple.csv', 'r') as data_file:
             simple_model.load_data(data_file)
 
-    def test_dataframe(self, simple_model):
+    def test_dataframe(self, simple_model, data_dir):
         with open(data_dir+'simple.csv', 'r') as data_file:
             data = pd.read_csv(data_file)
         simple_model.load_data(data)
