@@ -1,8 +1,5 @@
-from .context import add_project_path, data_dir, main_data_dir
 import choice_model
 import pytest
-
-add_project_path()
 
 
 @pytest.fixture(scope='module')
