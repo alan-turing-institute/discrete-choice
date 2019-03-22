@@ -21,9 +21,16 @@ _CHOICE_ID_COL = 'choice_id'
 
 
 class PylogitInterface(Interface):
-    _valid_models = [MultinomialLogit]
+    """
+    Pylogit interface class
 
-    def __init__(self, model):
+    Args:
+        model (ChoiceModel): The choice model to create an interface for.
+    """
+    _valid_models = [MultinomialLogit]
+    name = 'pylogit'
+
+    def __init__(self, model, **kwargs):
         super().__init__(model)
 
         # Create mapping from choice strings to integers begining from 1

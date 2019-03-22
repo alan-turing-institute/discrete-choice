@@ -1,56 +1,33 @@
-from .context import add_project_path, data_dir, main_data_dir
 import choice_model
 import os.path
 import platform
 import pytest
 
-add_project_path()
-
-
-@pytest.fixture(scope='module')
-def simple_multinomial_model():
-    with open(data_dir+'simple_model.yml', 'r') as yaml_file:
-        return choice_model.MultinomialLogit.from_yaml(yaml_file)
-
-
-@pytest.fixture(scope="module")
-def simple_model():
-    with open(data_dir+'simple_model.yml', 'r') as yaml_file:
-        return choice_model.ChoiceModel.from_yaml(yaml_file)
-
-
-@pytest.fixture(scope="module")
-def simple_multinomial_model_with_data():
-    with open(data_dir+'simple_model.yml', 'r') as yaml_file,\
-            open(data_dir+'simple.csv', 'r') as data_file:
-        model = choice_model.MultinomialLogit.from_yaml(yaml_file)
-        model.load_data(data_file)
-        return model
-
 
 class TestAlogitInterface():
     def test_multinomial_logit(self, simple_multinomial_model_with_data):
         model = simple_multinomial_model_with_data
-        choice_model.AlogitInterface(model, './dummy')
+        choice_model.AlogitInterface(model, alogit_path='./dummy')
 
     def test_alogit_path(self, simple_multinomial_model_with_data):
         model = simple_multinomial_model_with_data
-        interface = choice_model.AlogitInterface(model, 'alo.exe')
+        interface = choice_model.AlogitInterface(model, alogit_path='alo.exe')
         assert interface.alogit_path == os.path.abspath('alo.exe')
 
     def test_simple_model(self, simple_model):
         with pytest.raises(TypeError):
-            choice_model.AlogitInterface(simple_model, './dummy')
+            choice_model.AlogitInterface(simple_model, alogit_path='./dummy')
 
     def test_no_data(self, simple_multinomial_model):
         with pytest.raises(choice_model.interface.interface.NoDataLoaded):
-            choice_model.AlogitInterface(simple_multinomial_model, './dummy')
+            choice_model.AlogitInterface(simple_multinomial_model,
+                                         alogit_path='./dummy')
 
 
 @pytest.fixture(scope="module")
 def simple_multinomial_alogit_interface(simple_multinomial_model_with_data):
     return choice_model.AlogitInterface(simple_multinomial_model_with_data,
-                                        './dummy')
+                                        alogit_path='./dummy')
 
 
 class TestAbbreviation():
@@ -132,7 +109,7 @@ class TestAloFile():
         alo_file = temp / 'simple.alo'
         interface = choice_model.AlogitInterface(
             simple_multinomial_model_with_data,
-            './dummy',
+            alogit_path='./dummy',
             data_file=str(data_file.absolute()),
             alo_file=str(alo_file.absolute())
             )
@@ -159,7 +136,7 @@ class TestDataFile():
         alo_file = temp / 'simple.alo'
         interface = choice_model.AlogitInterface(
             simple_multinomial_model_with_data,
-            './dummy',
+            alogit_path='./dummy',
             data_file=str(data_file.absolute()),
             alo_file=str(alo_file.absolute())
             )
@@ -171,7 +148,7 @@ class TestDataFile():
 def simple_multinomial_alogit_estimation(simple_multinomial_model_with_data):
     interface = choice_model.AlogitInterface(
         simple_multinomial_model_with_data,
-        r'D:\Alo45.exe')
+        alogit_path=r'D:\Alo45.exe')
     interface.estimate()
     return interface
 
@@ -192,12 +169,13 @@ class TestAlogitEstimation():
 
 
 @pytest.fixture(scope='module')
-def grenoble_estimation():
+def grenoble_estimation(main_data_dir):
     with open(main_data_dir+'grenoble.yml') as model_file,\
             open(main_data_dir+'grenoble.csv') as data_file:
         model = choice_model.MultinomialLogit.from_yaml(model_file)
         model.load_data(data_file)
-    interface = choice_model.AlogitInterface(model, r'D:\Alo45.exe')
+    interface = choice_model.AlogitInterface(model,
+                                             alogit_path=r'D:\Alo45.exe')
     interface.estimate()
     return interface
 
@@ -289,12 +267,12 @@ class TestPylogitGrenobleEstimation():
 
 
 @pytest.fixture(scope='module')
-def grenoble_estimation_example():
+def grenoble_estimation_example(main_data_dir, data_dir):
     with open(main_data_dir+'grenoble.yml') as model_file,\
             open(main_data_dir+'grenoble.csv') as data_file:
         model = choice_model.MultinomialLogit.from_yaml(model_file)
         model.load_data(data_file)
-    interface = choice_model.AlogitInterface(model, './dummy')
+    interface = choice_model.AlogitInterface(model, alogit_path='./dummy')
     interface._parse_output_file(data_dir+'Grenoble.LOG')
     interface._estimated = True
     return interface

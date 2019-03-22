@@ -9,6 +9,7 @@ import pandas as pd
 
 class Interface(object):
     _valid_models = [ChoiceModel]
+    name = None
 
     def __init__(self, model):
         self._ensure_valid_model(model)

@@ -1,24 +1,6 @@
-from .context import add_project_path, data_dir
 import choice_model
-import pandas
+import pandas as pd
 import pytest
-
-add_project_path()
-
-
-@pytest.fixture(scope="class")
-def simple_model():
-    with open(data_dir+'simple_model.yml', 'r') as yaml_file:
-        return choice_model.ChoiceModel.from_yaml(yaml_file)
-
-
-@pytest.fixture(scope="class")
-def simple_model_with_data():
-    with open(data_dir+'simple_model.yml', 'r') as yaml_file,\
-            open(data_dir+'simple.csv', 'r') as data_file:
-        model = choice_model.ChoiceModel.from_yaml(yaml_file)
-        model.load_data(data_file)
-        return model
 
 
 class TestChoiceModel():
@@ -26,9 +8,9 @@ class TestChoiceModel():
         model = simple_model
         assert model.title == 'Simple model'
 
-    def test_model_data(self, simple_model_with_data):
+    def test_model_data(self, simple_model_with_data, data_dir):
         model = simple_model_with_data
-        assert all(model.data == pandas.read_csv(data_dir+'simple.csv'))
+        assert all(model.data == pd.read_csv(data_dir+'simple.csv'))
 
     def test_model_choices(self, simple_model):
         model = simple_model
@@ -59,34 +41,35 @@ class TestChoiceModel():
         model = simple_model
         assert model.number_of_choices() == 2
 
-    def test_number_of_parameters(self, simple_model):
+    @pytest.mark.parametrize('include_intercepts,result', [
+        (True, 4),
+        (False, 3)
+        ])
+    def test_number_of_parameters(self, simple_model, include_intercepts,
+                                  result):
         model = simple_model
-        assert model.number_of_parameters() == 4
-
-    def test_number_of_parameters_excluding_intercepts(self, simple_model):
-        model = simple_model
-        assert model.number_of_parameters(include_intercepts=False) == 3
+        assert model.number_of_parameters(include_intercepts) == result
 
 
-def test_missing_yaml_key():
+def test_missing_yaml_key(data_dir):
     with pytest.raises(choice_model.model.MissingYamlKey):
         with open(data_dir+'missing_title.yml', 'r') as yaml_file:
             choice_model.ChoiceModel.from_yaml(yaml_file)
 
 
-def test_undefined_availability():
+def test_undefined_availability(data_dir):
     with pytest.raises(choice_model.model.UndefinedAvailability):
         with open(data_dir+'undefined_availability.yml', 'r') as yaml_file:
             choice_model.ChoiceModel.from_yaml(yaml_file)
 
 
-def test_incorrect_intercepts():
+def test_incorrect_intercepts(data_dir):
     with pytest.raises(choice_model.model.IncorrectNumberOfIntercepts):
         with open(data_dir+'incorrect_intercepts.yml', 'r') as yaml_file:
             choice_model.ChoiceModel.from_yaml(yaml_file)
 
 
-def test_missing_field():
+def test_missing_field(data_dir):
     with pytest.raises(choice_model.model.MissingField):
         with open(data_dir+'simple_model.yml', 'r') as yaml_file,\
                 open(data_dir+'missing_field.csv', 'r') as data_file:
@@ -94,10 +77,19 @@ def test_missing_field():
             model.load_data(data_file)
 
 
-@pytest.fixture(scope='class')
-def simple_multinomial_model():
-    with open(data_dir+'simple_model.yml', 'r') as yaml_file:
-        return choice_model.MultinomialLogit.from_yaml(yaml_file)
+class TestData():
+    def test_type_error(self, simple_model):
+        with pytest.raises(TypeError):
+            simple_model.load_data(5)
+
+    def test_csv_file(self, simple_model, data_dir):
+        with open(data_dir+'simple.csv', 'r') as data_file:
+            simple_model.load_data(data_file)
+
+    def test_dataframe(self, simple_model, data_dir):
+        with open(data_dir+'simple.csv', 'r') as data_file:
+            data = pd.read_csv(data_file)
+        simple_model.load_data(data)
 
 
 class TestMultinomialLogit():
