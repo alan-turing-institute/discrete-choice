@@ -4,27 +4,6 @@ import platform
 import pytest
 
 
-@pytest.fixture(scope='module')
-def simple_multinomial_model():
-    with open(data_dir+'simple_model.yml', 'r') as yaml_file:
-        return choice_model.MultinomialLogit.from_yaml(yaml_file)
-
-
-@pytest.fixture(scope="module")
-def simple_model():
-    with open(data_dir+'simple_model.yml', 'r') as yaml_file:
-        return choice_model.ChoiceModel.from_yaml(yaml_file)
-
-
-@pytest.fixture(scope="module")
-def simple_multinomial_model_with_data():
-    with open(data_dir+'simple_model.yml', 'r') as yaml_file,\
-            open(data_dir+'simple.csv', 'r') as data_file:
-        model = choice_model.MultinomialLogit.from_yaml(yaml_file)
-        model.load_data(data_file)
-        return model
-
-
 class TestAlogitInterface():
     def test_multinomial_logit(self, simple_multinomial_model_with_data):
         model = simple_multinomial_model_with_data
@@ -189,7 +168,7 @@ class TestAlogitEstimation():
 
 
 @pytest.fixture(scope='module')
-def grenoble_estimation():
+def grenoble_estimation(main_data_dir):
     with open(main_data_dir+'grenoble.yml') as model_file,\
             open(main_data_dir+'grenoble.csv') as data_file:
         model = choice_model.MultinomialLogit.from_yaml(model_file)
@@ -286,7 +265,7 @@ class TestPylogitGrenobleEstimation():
 
 
 @pytest.fixture(scope='module')
-def grenoble_estimation_example():
+def grenoble_estimation_example(main_data_dir, data_dir):
     with open(main_data_dir+'grenoble.yml') as model_file,\
             open(main_data_dir+'grenoble.csv') as data_file:
         model = choice_model.MultinomialLogit.from_yaml(model_file)

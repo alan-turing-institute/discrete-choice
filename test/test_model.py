@@ -3,27 +3,12 @@ import pandas
 import pytest
 
 
-@pytest.fixture(scope="class")
-def simple_model():
-    with open(data_dir+'simple_model.yml', 'r') as yaml_file:
-        return choice_model.ChoiceModel.from_yaml(yaml_file)
-
-
-@pytest.fixture(scope="class")
-def simple_model_with_data():
-    with open(data_dir+'simple_model.yml', 'r') as yaml_file,\
-            open(data_dir+'simple.csv', 'r') as data_file:
-        model = choice_model.ChoiceModel.from_yaml(yaml_file)
-        model.load_data(data_file)
-        return model
-
-
 class TestChoiceModel():
     def test_model_title(self, simple_model):
         model = simple_model
         assert model.title == 'Simple model'
 
-    def test_model_data(self, simple_model_with_data):
+    def test_model_data(self, simple_model_with_data, data_dir):
         model = simple_model_with_data
         assert all(model.data == pandas.read_csv(data_dir+'simple.csv'))
 
@@ -65,36 +50,30 @@ class TestChoiceModel():
         assert model.number_of_parameters(include_intercepts=False) == 3
 
 
-def test_missing_yaml_key():
+def test_missing_yaml_key(data_dir):
     with pytest.raises(choice_model.model.MissingYamlKey):
         with open(data_dir+'missing_title.yml', 'r') as yaml_file:
             choice_model.ChoiceModel.from_yaml(yaml_file)
 
 
-def test_undefined_availability():
+def test_undefined_availability(data_dir):
     with pytest.raises(choice_model.model.UndefinedAvailability):
         with open(data_dir+'undefined_availability.yml', 'r') as yaml_file:
             choice_model.ChoiceModel.from_yaml(yaml_file)
 
 
-def test_incorrect_intercepts():
+def test_incorrect_intercepts(data_dir):
     with pytest.raises(choice_model.model.IncorrectNumberOfIntercepts):
         with open(data_dir+'incorrect_intercepts.yml', 'r') as yaml_file:
             choice_model.ChoiceModel.from_yaml(yaml_file)
 
 
-def test_missing_field():
+def test_missing_field(data_dir):
     with pytest.raises(choice_model.model.MissingField):
         with open(data_dir+'simple_model.yml', 'r') as yaml_file,\
                 open(data_dir+'missing_field.csv', 'r') as data_file:
             model = choice_model.ChoiceModel.from_yaml(yaml_file)
             model.load_data(data_file)
-
-
-@pytest.fixture(scope='class')
-def simple_multinomial_model():
-    with open(data_dir+'simple_model.yml', 'r') as yaml_file:
-        return choice_model.MultinomialLogit.from_yaml(yaml_file)
 
 
 class TestMultinomialLogit():
