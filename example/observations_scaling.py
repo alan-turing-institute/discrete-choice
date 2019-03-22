@@ -15,6 +15,7 @@ import numpy as np # noqa
 import pandas as pd # noqa
 import platform # noqa
 
+# Define the example model
 model = choice_model.synthetic_model(
     title='Synthetic',
     number_of_alternatives=5,
@@ -23,9 +24,9 @@ model = choice_model.synthetic_model(
 
 
 def scaling(interface, model, records, repeats, interface_args):
-    estimation_times = []
+    df = pd.DataFrame(columns=records)
     for number_of_records in records:
-        average = 0.
+        estimation_times = []
         for repeat in range(repeats):
             data = choice_model.synthetic_data(
                 model=model,
@@ -35,38 +36,44 @@ def scaling(interface, model, records, repeats, interface_args):
             solver = interface(model, **interface_args)
             solver.estimate()
 
-            average += solver.estimation_time()
-            del data
-            del solver
-        estimation_times.append(average/repeats)
-
-    return estimation_times
+            estimation_times.append(solver.estimation_time())
+        df[number_of_records] = estimation_times
+    return df
 
 
+# Choose which interfaces to compare
 if platform.system() == 'Windows':
     interfaces = [choice_model.PylogitInterface,
                   choice_model.AlogitInterface]
     interface_args = {'alogit_path': r'D:\Alo45.exe'}
+    records = {'ALOGIT': np.arange(2000, 22000, 2000),
+               'pylogit': np.arange(2000, 18000, 2000)}
 else:
     interfaces = [choice_model.PylogitInterface]
     interface_args = {}
+    records = {'pylogit': np.arange(2000, 18000, 2000)}
 
-records = np.arange(2000, 22000, 2000)
-df = pd.DataFrame()
-df['number of observations'] = records
+# Sample estimation times for each model over a range of observation sizes
+estimation_times = {}
 for interface in interfaces:
-    df[interface.name] = scaling(interface, model, records, 5, interface_args)
+    df = scaling(interface, model, records[interface.name], 10, interface_args)
+    estimation_times[interface.name] = df
 
-with open('scaling_observations.csv', 'w') as csv_file:
-    df.to_csv(csv_file,
-              index=False,
-              line_terminator='\n')
+    with open(
+            'scaling_observations_{}.csv'.format(interface.name), 'w'
+            ) as csv_file:
+        df.to_csv(csv_file,
+                  index=False,
+                  line_terminator='\n')
 
 fig, ax = plt.subplots()
 ax.set_xlabel('number of observations')
 ax.set_ylabel('estimation time / s')
 for interface in interfaces:
-    plt.plot(records, df[interface.name], '-x', label=interface.name)
+    # Plot the mean estimation times and errors
+    results = estimation_times[interface.name]
+    ax.errorbar(results.columns, results.mean(),
+                yerr=results.sem(), fmt='-x', label=interface.name)
 
 fig.tight_layout()
 fig.savefig('scaling_observations.pdf', format='pdf')
