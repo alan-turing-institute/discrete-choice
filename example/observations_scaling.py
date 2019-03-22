@@ -73,7 +73,8 @@ for interface in interfaces:
     # Plot the mean estimation times and errors
     results = estimation_times[interface.name]
     ax.errorbar(results.columns, results.mean(),
-                yerr=results.sem(), fmt='-x', label=interface.name)
+                yerr=results.sem(), fmt='-o', label=interface.name)
 
+fig.legend()
 fig.tight_layout()
 fig.savefig('scaling_observations.pdf', format='pdf')
