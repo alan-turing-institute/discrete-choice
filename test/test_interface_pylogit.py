@@ -1,32 +1,8 @@
-from .context import add_project_path, data_dir, main_data_dir
 import choice_model
 import pytest
 
-add_project_path()
-
 
 @pytest.fixture(scope='module')
-def simple_multinomial_model():
-    with open(data_dir+'simple_model.yml', 'r') as yaml_file:
-        return choice_model.MultinomialLogit.from_yaml(yaml_file)
-
-
-@pytest.fixture(scope="module")
-def simple_model():
-    with open(data_dir+'simple_model.yml', 'r') as yaml_file:
-        return choice_model.ChoiceModel.from_yaml(yaml_file)
-
-
-@pytest.fixture(scope="module")
-def simple_multinomial_model_with_data():
-    with open(data_dir+'simple_model.yml', 'r') as yaml_file,\
-            open(data_dir+'simple.csv', 'r') as data_file:
-        model = choice_model.MultinomialLogit.from_yaml(yaml_file)
-        model.load_data(data_file)
-        return model
-
-
-@pytest.fixture(scope="module")
 def simple_multinomial_pylogit_interface(simple_multinomial_model_with_data):
     return choice_model.PylogitInterface(simple_multinomial_model_with_data)
 
@@ -118,7 +94,7 @@ class TestPylogitNames():
         assert interface.names[variable] == [names]
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope='module')
 def simple_multinomial_pylogit_estimation(simple_multinomial_model_with_data):
     interface = choice_model.PylogitInterface(
         simple_multinomial_model_with_data)
@@ -163,7 +139,7 @@ class TestPylogitEstimation():
 
 
 @pytest.fixture(scope='module')
-def grenoble_estimation():
+def grenoble_estimation(main_data_dir):
     with open(main_data_dir+'grenoble.yml') as model_file,\
             open(main_data_dir+'grenoble.csv') as data_file:
         model = choice_model.MultinomialLogit.from_yaml(model_file)
