@@ -85,7 +85,6 @@ fig, ax = plt.subplots()
 ax.set_xlabel('number of alternatives')
 ax.set_ylabel('estimation time / s')
 for interface in interfaces:
-    print('Interface: {}'.format(interface.name))
     # Plot the mean estimation times and errors
     results = estimation_times[interface.name]
     ax.errorbar(results.columns, results.mean(),
