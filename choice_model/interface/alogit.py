@@ -84,7 +84,7 @@ class AlogitInterface(Interface):
         full = []
         abbreviations = []
         # Abbreviate choice names
-        for number, choice in enumerate(model.choices):
+        for number, choice in enumerate(model.choices, start=1):
             full.append(choice)
             abbreviations.append(_ALO_LABEL_CHOICE + str(number))
 
@@ -94,31 +94,33 @@ class AlogitInterface(Interface):
         abbreviations.append(_ALO_LABEL_CHOICE_COLUMN)
 
         # Abbreviate availability column labels
-        for number, availability in enumerate(model.availability.values()):
+        for number, availability in enumerate(model.availability.values(),
+                                              start=1):
             full.append(availability)
             abbreviations.append(_ALO_LABEL_AVAILABILITY + str(number))
 
         # Abbreviate variable names and choice independent variable column
         # labels
-        for number, variable in enumerate(model.all_variables()):
+        for number, variable in enumerate(model.all_variables(), start=1):
             full.append(variable)
             abbreviations.append(_ALO_LABEL_VARIABLE + str(number))
 
         # Abbreviate choice dependend variable column labels
         for number, variable in enumerate(
-                model.choice_dependent_variable_fields()
+                model.choice_dependent_variable_fields(),
+                start=1
                 ):
             full.append(variable)
             abbreviations.append(_ALO_LABEL_CHOICE_DEPENDENT_VARIABLE
                                  + str(number))
 
         # Abbreviate intercept names
-        for number, intercept in enumerate(model.intercepts.values()):
+        for number, intercept in enumerate(model.intercepts.values(), start=1):
             full.append(intercept)
             abbreviations.append(_ALO_LABEL_INTERCEPT + str(number))
 
         # Abbreviate parameter names
-        for number, parameter in enumerate(model.parameters):
+        for number, parameter in enumerate(model.parameters, start=1):
             full.append(parameter)
             abbreviations.append(_ALO_LABEL_PARAMETER + str(number))
 
