@@ -15,10 +15,16 @@ _ALO_COMMAND_COEFFICIENTS = '$coeff'
 _ALO_COMMAND_ALTERNATIVES = "$nest root()"
 _ALO_COMMAND_ARRAY = "$array"
 
+_ALO_LABEL_CHOICE = 'ch'
+_ALO_LABEL_CHOICE_COLUMN = 'alt'
+_ALO_LABEL_AVAILABILITY = 'av'
+_ALO_LABEL_VARIABLE = 'v'
+_ALO_LABEL_CHOICE_DEPENDENT_VARIABLE = 'cv'
+_ALO_LABEL_INTERCEPT = 'c'
+_ALO_LABEL_PARAMETER = 'p'
+
 _MAX_CHARACTER_LENGTH = 10
 _MAX_LINE_LENGTH = 77
-
-_CHOICE_COLUMN = 'choice_no'
 
 
 class AlogitInterface(Interface):
@@ -63,10 +69,6 @@ class AlogitInterface(Interface):
         # Create column labels
         column_labels = [self.abbreviate(label)
                          for label in model.data.columns]
-        # Replace choice column
-        column_labels[
-            column_labels.index(self.abbreviate(model.choice_column))
-            ] = _CHOICE_COLUMN
         self.column_labels = column_labels
 
         # Create ALOGIT input file string
@@ -82,62 +84,46 @@ class AlogitInterface(Interface):
         full = []
         abbreviations = []
         # Abbreviate choice names
-        for choice in model.choices:
+        for number, choice in enumerate(model.choices):
             full.append(choice)
-            abbreviations.append(self._abbreviate(choice))
+            abbreviations.append(_ALO_LABEL_CHOICE + str(number))
+
         # Abbreviate choice names / column label
         choice_column = model.choice_column
         full.append(choice_column)
-        abbreviations.append(self._abbreviate(choice_column))
-        # Abbreviate availability column labels
-        for availability in model.availability.values():
-            full.append(availability)
-            abbreviations.append(self._abbreviate(availability))
-        # Abbreviate variable names / column labels
-        all_variables_and_fields = set(model.all_variables()
-                                       + model.all_variable_fields())
-        for variable in all_variables_and_fields:
-            full.append(variable)
-            abbreviations.append(self._abbreviate(variable))
-        # Abbreviate intercept names
-        for intercept in model.intercepts.values():
-            full.append(intercept)
-            abbreviations.append(self._abbreviate(intercept))
-        # Abbreviate parameter names
-        for parameter in model.parameters:
-            full.append(parameter)
-            abbreviations.append(self._abbreviate(parameter))
+        abbreviations.append(_ALO_LABEL_CHOICE_COLUMN)
 
-        # Handle duplicates due to truncation (only up to ten duplicates)
-        for abbreviation in abbreviations[:]:
-            # Count number of duplicates of abbreviation
-            duplicate_count = abbreviations.count(abbreviation)
-            if duplicate_count > 1:
-                # Determine length of number and hence create an appropiate
-                # integer string format
-                number_length = len(str(duplicate_count))
-                number_format = '{{:0{}d}}'.format(number_length)
-                abbreviation_format = '{}' + number_format
-                truncated = abbreviation[:-number_length]
-                # Replace each occurance usings numbers 01--duplicate_count
-                for occurance in range(1, duplicate_count+1):
-                    index = abbreviations.index(abbreviation)
-                    abbreviations[index] = (
-                        abbreviation_format.format(
-                            truncated,
-                            occurance
-                            )
-                        )
+        # Abbreviate availability column labels
+        for number, availability in enumerate(model.availability.values()):
+            full.append(availability)
+            abbreviations.append(_ALO_LABEL_AVAILABILITY + str(number))
+
+        # Abbreviate variable names and choice independent variable column
+        # labels
+        for number, variable in enumerate(model.all_variables()):
+            full.append(variable)
+            abbreviations.append(_ALO_LABEL_VARIABLE + str(number))
+
+        # Abbreviate choice dependend variable column labels
+        for number, variable in enumerate(
+                model.choice_dependent_variable_fields()
+                ):
+            full.append(variable)
+            abbreviations.append(_ALO_LABEL_CHOICE_DEPENDENT_VARIABLE
+                                 + str(number))
+
+        # Abbreviate intercept names
+        for number, intercept in enumerate(model.intercepts.values()):
+            full.append(intercept)
+            abbreviations.append(_ALO_LABEL_INTERCEPT + str(number))
+
+        # Abbreviate parameter names
+        for number, parameter in enumerate(model.parameters):
+            full.append(parameter)
+            abbreviations.append(_ALO_LABEL_PARAMETER + str(number))
 
         self.abbreviation = dict(zip(full, abbreviations))
         self.elongation = dict(zip(abbreviations, full))
-
-    @staticmethod
-    def _abbreviate(string):
-        """
-        'Abbreviate' a string by truncating it.
-        """
-        return string[:_MAX_CHARACTER_LENGTH]
 
     def abbreviate(self, string):
         """
@@ -261,7 +247,7 @@ class AlogitInterface(Interface):
         Create a record to explain the numeric encoding of choices
         """
         model = self.model
-        string = 'choice=recode(' + _CHOICE_COLUMN + ' ' + ', '.join(
+        string = 'choice=recode(' + _ALO_LABEL_CHOICE_COLUMN + ' ' + ', '.join(
             [self.abbreviate(choice) for choice in model.choices]) + ')'
         return textwrap.wrap(string, width=_MAX_LINE_LENGTH,
                              break_long_words=False)
@@ -276,7 +262,7 @@ class AlogitInterface(Interface):
 
         # Intercept term
         if utility.intercept is not None:
-            utility_string = [utility.intercept]
+            utility_string = [self.abbreviate(utility.intercept)]
         else:
             utility_string = []
 
@@ -310,15 +296,16 @@ class AlogitInterface(Interface):
         number_of_choices = model.number_of_choices()
         choice_encoding = dict(
             zip(model.choices, np.arange(number_of_choices, dtype=float)+1))
-        model.data[_CHOICE_COLUMN] = model.data[model.choice_column].apply(
-            lambda x: choice_encoding[x])
+        model.data[_ALO_LABEL_CHOICE_COLUMN] = (
+            model.data[model.choice_column].apply(lambda x: choice_encoding[x])
+            )
 
         # Produce list of column labels replacing old choice column with the
         # new encoded choice column
         column_labels = list(model.data.columns)[:-1]
         column_labels[
             column_labels.index(model.choice_column)
-            ] = _CHOICE_COLUMN
+            ] = _ALO_LABEL_CHOICE_COLUMN
 
         # Write data file
         with open(self.data_file, 'w') as data_file:
@@ -327,7 +314,7 @@ class AlogitInterface(Interface):
                               columns=column_labels)
 
         # Drop encoded choice column
-        model.data.drop(columns=_CHOICE_COLUMN, inplace=True)
+        model.data.drop(columns=_ALO_LABEL_CHOICE_COLUMN, inplace=True)
 
     def estimate(self):
         """
