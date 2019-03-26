@@ -5,13 +5,13 @@ Grenoble Transport Survey
 
 D:\Alo45.exe                                 562688 b. Date: 11 Mar 19 at 10:33 
 
-Run started at  8:38:07 on 15 Mar 19
+Run started at 16:13:41 on 26 Mar 19
  
 INFORMATION 246:   FILE  1 : first main file
-C:..s\GitHub\ALOGIT-Python\test\Grenoble.csv  75788 b. Date: 15 Mar 19 at  8:38
+C:..itHub\ALOGIT-Python\example\Grenoble.csv  75788 b. Date: 26 Mar 19 at 16:13
  
-INFORMATION 163: control file completed:      35 lines
-C:..s\GitHub\ALOGIT-Python\test\Grenoble.alo   1559 b. Date: 15 Mar 19 at  8:38
+INFORMATION 163: control file completed:      30 lines
+C:..itHub\ALOGIT-Python\example\Grenoble.alo    878 b. Date: 26 Mar 19 at 16:13
  
 Function defined in control file: PREP & ESTIM
  
@@ -24,30 +24,30 @@ $ESTIMATE controls
  Error print     = 1
  
 $ARRAY items
- travel_tim(    5)   cost(    5)   non_linear(    5)
+ v8(    5)   v9(    5)   v10(    5)
  
  
 REPORT OF COEFFICIENTS
  
 Label      Con   Value      Type
 -------    ---   -----      -----
-cpass       F    .0000      Utility
-cwalk       F    .0000      Utility
-ccycle      F    .0000      Utility
-cpt         F    .0000      Utility
-pfemale_pa  F    .0000      Utility
-phas_car    F    .0000      Utility
-pmanual_wo  F    .0000      Utility
-pcentral_z  F    .0000      Utility
-pfemale_cy  F    .0000      Utility
-pcar_compe  F    .0000      Utility
-porigin_wa  F    .0000      Utility
-phead_of_h  F    .0000      Utility
-pnon_linea  F    .0000      Utility
-pcost       F    .0000      Utility
-ptime       F    .0000      Utility
+c4          F    .0000      Utility
+c3          F    .0000      Utility
+c2          F    .0000      Utility
+c1          F    .0000      Utility
+prm11       F    .0000      Utility
+prm10       F    .0000      Utility
+prm9        F    .0000      Utility
+prm8        F    .0000      Utility
+prm7        F    .0000      Utility
+prm6        F    .0000      Utility
+prm5        F    .0000      Utility
+prm4        F    .0000      Utility
+prm3        F    .0000      Utility
+prm2        F    .0000      Utility
+prm1        F    .0000      Utility
  
-INFORMATION 001: control file processing time      .10 secs.
+INFORMATION 001: control file processing time      .11 secs.
  
 INFORMATION 534: reached end of file   1 after      975 records
  
@@ -60,36 +60,36 @@ FREQUENCY DISTRIBUTION OF ALTERNATIVE AVAILABILITY
  
 Alternative    Chosen    Unchosen    Avail.    Unavail.
 -----------  ---------  ---------  ---------  ---------
-public_tr1     112.00     741.00     853.00     122.00
-car            500.00     251.00     751.00     224.00
-cycle          137.00     838.00     975.00        .00
-walk           178.00     636.00     814.00     161.00
-passenger       48.00     927.00     975.00        .00
+ch1            112.00     741.00     853.00     122.00
+ch2            500.00     251.00     751.00     224.00
+ch3            137.00     838.00     975.00        .00
+ch4            178.00     636.00     814.00     161.00
+ch5             48.00     927.00     975.00        .00
  
  
 RANGES OF INDEPENDENT VARIABLES
  
 Coefficient   Chsn Min   Chsn Max   Diff Min   Diff Max
 -----------  ---------  ---------  ---------  ---------
-cpass             .00       1.00      -1.00       1.00
-cwalk             .00       1.00      -1.00       1.00
-ccycle            .00       1.00      -1.00       1.00
-cpt               .00       1.00      -1.00       1.00
-pfemale_pa        .00       1.00      -1.00       1.00
-phas_car          .00       1.00      -1.00       1.00
-pmanual_wo        .00       1.00      -1.00       1.00
-pcentral_z        .00       1.00      -1.00       1.00
-pfemale_cy        .00       1.00      -1.00       1.00
-pcar_compe        .00       1.00      -1.00       1.00
-porigin_wa        .00     504.00    -504.00    1440.00
-phead_of_h        .00       1.00      -1.00       1.00
-pnon_linea        .00     900.00    -900.00     900.00
-pcost             .00     964.00    -964.00     996.10
-ptime             .00    7453.00   -6661.00    6645.00
+c4                .00       1.00      -1.00       1.00
+c3                .00       1.00      -1.00       1.00
+c2                .00       1.00      -1.00       1.00
+c1                .00       1.00      -1.00       1.00
+prm11             .00       1.00      -1.00       1.00
+prm10             .00       1.00      -1.00       1.00
+prm9              .00       1.00      -1.00       1.00
+prm8              .00       1.00      -1.00       1.00
+prm7              .00       1.00      -1.00       1.00
+prm6              .00       1.00      -1.00       1.00
+prm5              .00     504.00    -504.00    1440.00
+prm4              .00       1.00      -1.00       1.00
+prm3              .00     900.00    -900.00     900.00
+prm2              .00     964.00    -964.00     996.10
+prm1              .00    7453.00   -6661.00    6645.00
  
 INFORMATION 002: data processing time      .03 secs.
  
-C:..s\GitHub\ALOGIT-Python\test\Grenoble.F11 139217 b. Date: 15 Mar 19 at  8:38
+C:..itHub\ALOGIT-Python\example\Grenoble.F11 139217 b. Date: 26 Mar 19 at 16:13
  
 INFORMATION 603: linear ("Quick") algorithm being used
 Iteration  1  Function =  -1452.5186   Conv.(3) = 17.3
@@ -125,54 +125,54 @@ Log Likelihood =    -828.5038
  
                             'Robust' errors
  Coefficient   Estimate   Std. Error 't' ratio
-    cpass     -2.731       .650        -4.2
-    cwalk      2.100       .312         6.7
-    ccycle     .5976       .325         1.8
-     cpt       1.098       .365         3.0
-  pfemale_pa   .8481       .343         2.5
-   phas_car    1.123       .501         2.2
-  pmanual_wo   .7553       .234         3.2
-  pcentral_z  -1.481       .488        -3.0
-  pfemale_cy  -.9190       .246        -3.7
-  pcar_compe   2.655       .342         7.8
-  porigin_wa  -.1890E-02   .128E-02    -1.5
-  phead_of_h  -.8310       .219        -3.8
-  pnon_linea  -.3240E-02   .333E-03    -9.7
-    pcost     -.1127E-02   .411E-03    -2.7
-    ptime     -.3840E-03   .958E-04    -4.0
+      c4      -2.731       .650        -4.2
+      c3       2.100       .312         6.7
+      c2       .5976       .325         1.8
+      c1       1.098       .365         3.0
+    prm11      .8481       .343         2.5
+    prm10      1.123       .501         2.2
+     prm9      .7553       .234         3.2
+     prm8     -1.481       .488        -3.0
+     prm7     -.9190       .246        -3.7
+     prm6      2.655       .342         7.8
+     prm5     -.1890E-02   .128E-02    -1.5
+     prm4     -.8310       .219        -3.8
+     prm3     -.3240E-02   .333E-03    -9.7
+     prm2     -.1127E-02   .411E-03    -2.7
+     prm1     -.3840E-03   .958E-04    -4.0
  
 Convergence (option 3) value is    .1149E-02
  
  
 Correlations of robust errors (multiplied by 1000)
  
-            cpas cwal ccyc cpt  pfem phas pman pcen pfem pcar pori phea pnon
-  cwalk      347
-  ccycle     379  767
-   cpt       271  716  634
-pfemale_pa  -578   29  -36   94
- phas_car   -795   50    9   12  331
-pmanual_wo   -41   53 -306   -1   42   41
-pcentral_z    40   11 -160   24  -21  -34  124
-pfemale_cy    15   -7 -333   64  122  -40  224  216
-pcar_compe   396  830  799  680  -20   26   15    7  -55
-porigin_wa     8   55   11 -344  -40   52   49  -45   16   37
-phead_of_h    73  -61   21 -238 -151  -82  -28  -37 -185  -28  -63
-pnon_linea    72 -124   56  261   27  -91 -127   -7   93    5   -1   36
-  pcost      168  241  251  154  -17    6  -33  -11   96    8   -6  -47   52
-  ptime       94 -141  -36 -392  -75  -45   14   41   -3   24  -83  -56 -485
+            c4   c3   c2   c1   prm1 prm1 prm9 prm8 prm7 prm6 prm5 prm4 prm3
+    c3       347
+    c2       379  767
+    c1       271  716  634
+  prm11     -578   29  -36   94
+  prm10     -795   50    9   12  331
+   prm9      -41   53 -306   -1   42   41
+   prm8       40   11 -160   24  -21  -34  124
+   prm7       15   -7 -333   64  122  -40  224  216
+   prm6      396  830  799  680  -20   26   15    7  -55
+   prm5        8   55   11 -344  -40   52   49  -45   16   37
+   prm4       73  -61   21 -238 -151  -82  -28  -37 -185  -28  -63
+   prm3       72 -124   56  261   27  -91 -127   -7   93    5   -1   36
+   prm2      168  241  251  154  -17    6  -33  -11   96    8   -6  -47   52
+   prm1       94 -141  -36 -392  -75  -45   14   41   -3   24  -83  -56 -485
  
 Error correlations continued
  
-            pcos
-  ptime       92
+            prm2
+   prm1       92
  
-INFORMATION 004: main estimation time      .03 secs.
+INFORMATION 004: main estimation time      .04 secs.
  
 Overview of time used
                          Seconds  (hr:min:sec)
-Control file time   :        .10     0:00:00
-Data processing time:        .04     0:00:00
-Estimation time     :        .03     0:00:00
+Control file time   :        .11     0:00:00
+Data processing time:        .03     0:00:00
+Estimation time     :        .05     0:00:00
  
-Total processing    :        .17     0:00:00
+Total processing    :        .19     0:00:00

@@ -276,7 +276,6 @@ def grenoble_estimation_example(main_data_dir, data_dir):
     return interface
 
 
-@pytest.mark.skip(reason="broken")
 class TestPylogitGrenobleEstimationExample():
     def test_null_log_likelihood(self, grenoble_estimation_example):
         interface = grenoble_estimation_example
@@ -356,7 +355,7 @@ class TestPylogitGrenobleEstimationExample():
 
     def test_estimation_time(self, grenoble_estimation_example):
         interface = grenoble_estimation_example
-        assert interface.estimation_time() == 0.03
+        assert interface.estimation_time() == 0.05
 
 
 class TestAlogitRequiresEstimation():
