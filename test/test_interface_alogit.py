@@ -32,20 +32,20 @@ def simple_multinomial_alogit_interface(simple_multinomial_model_with_data):
 
 class TestAbbreviation():
     abbreviation_map = [
-        ('choice1', 'ch0'),
-        ('choice2', 'ch1'),
+        ('choice1', 'ch1'),
+        ('choice2', 'ch2'),
         ('alternative', 'alt'),
-        ('avail_choice1', 'av0'),
-        ('avail_choice2', 'av1'),
-        ('var1', 'v0'),
-        ('var2', 'v1'),
-        ('var3', 'v2'),
-        ('choice1_var3', 'cv0'),
-        ('choice2_var3', 'cv1'),
-        ('cchoice1', 'c0'),
-        ('p1', 'p0'),
-        ('p2', 'p1'),
-        ('p3', 'p2')
+        ('avail_choice1', 'av1'),
+        ('avail_choice2', 'av2'),
+        ('var1', 'v1'),
+        ('var2', 'v2'),
+        ('var3', 'v3'),
+        ('choice1_var3', 'cv1'),
+        ('choice2_var3', 'cv2'),
+        ('cchoice1', 'c1'),
+        ('p1', 'prm1'),
+        ('p2', 'prm2'),
+        ('p3', 'prm3')
         ]
 
     @pytest.mark.parametrize('full,short', abbreviation_map)
@@ -63,8 +63,8 @@ class TestAbbreviation():
 
 class TestAloFile():
     @pytest.mark.parametrize('choice,string', [
-        ('choice1', 'c0 + p0*v0 + p2*v2(ch0)'),
-        ('choice2', 'p1*v1 + p2*v2(ch1)')
+        ('choice1', 'c1 + prm1*v1 + prm3*v3(ch1)'),
+        ('choice2', 'prm2*v2 + prm3*v3(ch2)')
         ])
     def test_utility_string(self, simple_multinomial_alogit_interface, choice,
                             string):
@@ -75,12 +75,12 @@ class TestAloFile():
         interface = simple_multinomial_alogit_interface
         assert (
             interface._specify_data_file() ==
-            ['file (name=Simple.csv) v0 v1 cv0 cv1 av0 av1 alt']
+            ['file (name=Simple.csv) v1 v2 cv1 cv2 av1 av2 alt']
             )
 
     @pytest.mark.parametrize('array,argument,string', [
-        ('var3', 'choice1', 'v2(ch0)'),
-        ('var3', 'choice2', 'v2(ch1)')
+        ('var3', 'choice1', 'v3(ch1)'),
+        ('var3', 'choice2', 'v3(ch2)')
         ])
     def test_array(self, simple_multinomial_alogit_interface, array, argument,
                    string):
@@ -88,8 +88,8 @@ class TestAloFile():
         assert interface._array(array, argument) == string
 
     @pytest.mark.parametrize('array,argument,string', [
-        ('var3', 'choice1', 'v2(ch0) ='),
-        ('var3', 'choice2', 'v2(ch1) =')
+        ('var3', 'choice1', 'v3(ch1) ='),
+        ('var3', 'choice2', 'v3(ch2) =')
         ])
     def test_array_record(self, simple_multinomial_alogit_interface, array,
                           argument, string):
@@ -99,7 +99,7 @@ class TestAloFile():
     def test_choices_record(self, simple_multinomial_alogit_interface):
         interface = simple_multinomial_alogit_interface
         assert interface._define_choices() == [
-            'choice=recode(alt ch0, ch1)']
+            'choice=recode(alt ch1, ch2)']
 
     def test_alo_file(self, simple_multinomial_model_with_data, tmp_path):
         temp = tmp_path
@@ -115,14 +115,14 @@ class TestAloFile():
         file_text = alo_file.read_text()
         # Skip checking file name as this will be different between runs
         start_string = (
-            '$title  Simple model\n$estimate\n$coeff p0 p1 p2 c0\n$nest root()'
-            ' ch0 ch1\n'
+            '$title  Simple model\n$estimate\n$coeff prm1 prm2 prm3 c1\n$nest '
+            'root() ch1 ch2\n'
             )
         assert file_text[:len(start_string)] == start_string
         end_string = (
-            'Avail(ch0) = av0\nAvail(ch1) = av1\nchoice=recode(alt ch0, ch1)\n'
-            '$array v2(alts)\nv2(ch0) = cv0\nv2(ch1) = cv1\nUtil(ch0) = c0 + '
-            'p0*v0 + p2*v2(ch0)\nUtil(ch1) = p1*v1 + p2*v2(ch1)\n'
+            'Avail(ch1) = av1\nAvail(ch2) = av2\nchoice=recode(alt ch1, ch2)\n'
+            '$array v3(alts)\nv3(ch1) = cv1\nv3(ch2) = cv2\nUtil(ch1) = c1 + '
+            'prm1*v1 + prm3*v3(ch1)\nUtil(ch2) = prm2*v2 + prm3*v3(ch2)\n'
             )
         assert file_text[-(len(end_string)):] == end_string
 
