@@ -190,16 +190,24 @@ class ChoiceModel(object):
         choice_dependent = list(self.choice_dependent_variables.keys())
         return choice_independent + choice_dependent
 
-    def all_variable_fields(self):
+    def choice_dependent_variable_fields(self):
         """
-        Produce a list of all expected fields in the data file correpsonding to
-        choice dependent or independent variables.
+        Produce a list of all expected fields in the data file corresponding to
+        choice dependent variables.
         """
-        choice_independent = self.choice_independent_variables
         choice_dependent = [
             label for variable in self.choice_dependent_variables.values()
             for label in variable.values()
             ]
+        return choice_dependent
+
+    def all_variable_fields(self):
+        """
+        Produce a list of all expected fields in the data file corresponding to
+        choice dependent or independent variables.
+        """
+        choice_independent = self.choice_independent_variables
+        choice_dependent = self.choice_dependent_variable_fields()
         return choice_independent + choice_dependent
 
     def availability_fields(self):
