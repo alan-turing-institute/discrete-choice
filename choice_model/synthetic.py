@@ -62,11 +62,11 @@ def synthetic_model(title, number_of_alternatives, number_of_variables):
 
     model = MultinomialLogit(
         title=title,
-        choices=alternatives,
+        alternatives=alternatives,
         choice_column='choice',
         availability=availability,
-        choice_independent_variables=[],
-        choice_dependent_variables=variables,
+        alternative_independent_variables=[],
+        alternative_dependent_variables=variables,
         intercepts=intercepts,
         parameters=parameters,
         specification=specification
@@ -95,9 +95,9 @@ def synthetic_data(model, number_of_records):
                  [model.choice_column])
         )
 
-    # Populate the choice column with choices picked uniformly from the
+    # Populate the choice column with alternatives picked uniformly from the
     # models alternatives
-    alternatives = model.choices
+    alternatives = model.alternatives
     data[model.choice_column] = random.choice(alternatives,
                                               size=number_of_records)
 

@@ -12,9 +12,9 @@ class TestChoiceModel():
         model = simple_model_with_data
         assert all(model.data == pd.read_csv(data_dir+'simple.csv'))
 
-    def test_model_choices(self, simple_model):
+    def test_model_alternatives(self, simple_model):
         model = simple_model
-        assert model.choices == ['choice1', 'choice2']
+        assert model.alternatives == ['choice1', 'choice2']
 
     def test_model_choice_column(self, simple_model):
         model = simple_model
@@ -37,9 +37,9 @@ class TestChoiceModel():
         model = simple_model
         assert model.parameters == ['p1', 'p2', 'p3']
 
-    def test_number_of_choices(self, simple_model):
+    def test_number_of_alternatives(self, simple_model):
         model = simple_model
-        assert model.number_of_choices() == 2
+        assert model.number_of_alternatives() == 2
 
     @pytest.mark.parametrize('include_intercepts,result', [
         (True, 4),
@@ -102,11 +102,11 @@ class TestMultinomialLogit():
                               parameters)
     u2 = choice_model.Utility(utility_string2, variables, None, parameters)
 
-    @pytest.mark.parametrize('choice,utility', [
+    @pytest.mark.parametrize('alternative,utility', [
         ('choice1', u1),
         ('choice2', u2)
         ])
     def test_specification(self, simple_multinomial_model,
-                           choice, utility):
+                           alternative, utility):
         model = simple_multinomial_model
-        assert model.specification[choice] == utility
+        assert model.specification[alternative] == utility

@@ -17,8 +17,8 @@ class TestSyntheticmodel():
     def test_title(self, synthetic_model):
         assert synthetic_model.title == 'Example Title'
 
-    def test_choices(self, synthetic_model):
-        assert synthetic_model.choices == ['alternative1', 'alternative2']
+    def test_alternatives(self, synthetic_model):
+        assert synthetic_model.alternatives == ['alternative1', 'alternative2']
 
     def test_variables(self, synthetic_model):
         assert synthetic_model.all_variables() == ['variable1', 'variable2',
@@ -33,11 +33,11 @@ class TestSyntheticmodel():
             'alternative2': 'availability2'
             }
 
-    def test_choice_independent_variables(self, synthetic_model):
-        assert synthetic_model.choice_independent_variables == []
+    def test_alternative_independent_variables(self, synthetic_model):
+        assert synthetic_model.alternative_independent_variables == []
 
-    def test_choice_dependent_variables(self, synthetic_model):
-        choice_dependent_variables = {
+    def test_alternative_dependent_variables(self, synthetic_model):
+        alternative_dependent_variables = {
             'variable1': {'alternative1': 'alternative1_variable1',
                           'alternative2': 'alternative2_variable1'},
             'variable2': {'alternative1': 'alternative1_variable2',
@@ -45,8 +45,8 @@ class TestSyntheticmodel():
             'variable3': {'alternative1': 'alternative1_variable3',
                           'alternative2': 'alternative2_variable3'}
             }
-        assert synthetic_model.choice_dependent_variables == (
-            choice_dependent_variables)
+        assert synthetic_model.alternative_dependent_variables == (
+            alternative_dependent_variables)
 
     def test_intercepts(self, synthetic_model):
         assert synthetic_model.intercepts == {'alternative1': 'c1'}
@@ -61,8 +61,8 @@ class TestSyntheticmodel():
                            'alternative1_variable3', 'alternative2_variable3']
         assert synthetic_model.all_variable_fields() == variable_fields
 
-    def test_number_of_choices(self, synthetic_model):
-        assert synthetic_model.number_of_choices() == 2
+    def test_number_of_alternatives(self, synthetic_model):
+        assert synthetic_model.number_of_alternatives() == 2
 
     @pytest.mark.parametrize('include_intercepts,result', [
         (True, 4),
@@ -92,6 +92,6 @@ class TestSyntheticData():
     def test_availabilities(self, synthetic_data, column):
         assert all(synthetic_data[column] == 1)
 
-    def test_choices(self, synthetic_data, synthetic_model):
+    def test_alternatives(self, synthetic_data, synthetic_model):
         assert all(synthetic_data['choice'].apply(
-            lambda x: x in synthetic_model.choices))
+            lambda x: x in synthetic_model.alternatives))

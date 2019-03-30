@@ -34,15 +34,15 @@ class PylogitInterface(Interface):
         super().__init__(model)
 
         # Create mapping from choice strings to integers begining from 1
-        number_of_choices = model.number_of_choices()
+        number_of_alternatives = model.number_of_alternatives()
         self.choice_encoding = dict(
-            zip(model.choices, np.arange(number_of_choices, dtype=int)+1))
+            zip(model.alternatives, np.arange(number_of_alternatives, dtype=int)+1))
 
         self._convert_to_long_format()
         self._create_specification_and_names()
         self._create_model()
 
-    def _encode_choices_as_integers(self):
+    def _encode_alternatives_as_integers(self):
         """
         Convert choice labels from strings to integers as pylogit expects
         """
@@ -52,8 +52,8 @@ class PylogitInterface(Interface):
         # Create alternative specific variables dictionary using the integer
         # encoding
         alt_specific_vars = {}
-        for variable in model.choice_dependent_variables.keys():
-            temp = model.choice_dependent_variables[variable]
+        for variable in model.alternative_dependent_variables.keys():
+            temp = model.alternative_dependent_variables[variable]
             # Replace string choice key with integer key
             temp = {choice_encoding[key]: value for key, value in temp.items()}
             alt_specific_vars[variable] = temp
@@ -76,7 +76,7 @@ class PylogitInterface(Interface):
         """
         model = self.model
         (alt_specific_vars,
-         availability_vars) = self._encode_choices_as_integers()
+         availability_vars) = self._encode_alternatives_as_integers()
         # Create observation number column as a range of integers from 1
         model.data[_OBSERVATION_COL] = np.arange(model.data.shape[0],
                                                  dtype=int)+1
@@ -84,7 +84,7 @@ class PylogitInterface(Interface):
         # Use pylogit routine to convert to long format
         self.long_data = pl.convert_wide_to_long(
             wide_data=model.data,
-            ind_vars=model.choice_independent_variables,
+            ind_vars=model.alternative_independent_variables,
             alt_specific_vars=alt_specific_vars,
             availability_vars=availability_vars,
             obs_id_col=_OBSERVATION_COL,
@@ -116,24 +116,24 @@ class PylogitInterface(Interface):
         # Variables
         for variable in model.all_variables():
             # Identify which choice utilities contain variable
-            relevant_choices = [
-                choice for choice in model.choices
+            relevant_alternatives = [
+                choice for choice in model.alternatives
                 if variable in model.specification[choice].all_variables]
 
             # Determine the corresponding parameters
             parameters = [model.specification[choice].term_dict[variable]
-                          for choice in relevant_choices]
+                          for choice in relevant_alternatives]
 
-            # Group choices into parameter sets using choice encoding
+            # Group alternatives into parameter sets using choice encoding
             parameter_set = set(parameters)
             parameter_set = {parameter: [] for parameter in parameter_set}
-            for choice, parameter in zip(relevant_choices, parameters):
+            for choice, parameter in zip(relevant_alternatives, parameters):
                 parameter_set[parameter].append(choice_encoding[choice])
 
             # Unpack choice lists of length 1
-            for parameter, choices in parameter_set.items():
-                if len(choices) == 1:
-                    parameter_set[parameter] = choices[0]
+            for parameter, alternatives in parameter_set.items():
+                if len(alternatives) == 1:
+                    parameter_set[parameter] = alternatives[0]
 
             # Create specification dictionary entry
             specification[variable] = list(parameter_set.values())

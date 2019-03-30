@@ -1,6 +1,6 @@
 title: Simple model
 
-choices:
+alternatives:
   - choice1
   - choice2
 choice_column: alternative
@@ -9,10 +9,10 @@ availability:
   choice1: avail_choice1
   #choice2: avail_choice2
 
-choice_independent_variables:
+alternative_independent_variables:
   - var1
   - var2
-choice_dependent_variables:
+alternative_dependent_variables:
   var3:
     choice1: choice1_var3
     choice2: choice2_var3
