@@ -13,24 +13,24 @@ class ChoiceModel(object):
     Parent class for choice models.
     """
 
-    def __init__(self, title, choices, choice_column, availability,
-                 choice_independent_variables, choice_dependent_variables,
+    def __init__(self, title, alternatives, choice_column, availability,
+                 alternative_independent_variables, alternative_dependent_variables,
                  intercepts, parameters):
         """
         Choice model constructor.
 
         Args:
             title (str): Title for the problem described by the model object
-            choices (list[str]): Labels for the possible choices/alternatives
+            alternatives (list[str]): Labels for the possible alternatives
                 in the model
             choice_column (str): Label of the column in the data file which
-                will contain the choices for each record
+                will contain the alternatives for each record
             availability (dict): A dictionary of labels of the columns defining
                 the availability of each choice. Keys are the names of each
                 choice and the corresponding values are the column labels.
-            choice_independent_variables (list[str]): A list of variable names
+            alternative_independent_variables (list[str]): A list of variable names
                 used in utility specifications that do not vary with choice.
-            choice_dependent_variables (dict): A dictionary defining variables
+            alternative_dependent_variables (dict): A dictionary defining variables
                 that vary with choice. The keys of the dictionary are the names
                 of the variables used in the utility specifications.  The
                 values are themselves dictionaries, with the key specifying the
@@ -42,28 +42,28 @@ class ChoiceModel(object):
                               'bus': 'cost_bus'},
                     }
             intercepts (dict): A dictionary of intercept variables. The keys
-                are the choices to which the intercepts correspond and the
+                are the alternatives to which the intercepts correspond and the
                 values are labels for the intercepts. There must be one fewer
-                intercept than the number of choices.
+                intercept than the number of alternatives.
             parameters (list[str]): Names of all parameters (except intercepts)
                 used in defining the utlity specifications.
         """
 
         self.title = title
-        self.choices = choices
+        self.alternatives = alternatives
         self.choice_column = choice_column
         self.availability = availability
-        self.choice_independent_variables = choice_independent_variables
-        self.choice_dependent_variables = choice_dependent_variables
+        self.alternative_independent_variables = alternative_independent_variables
+        self.alternative_dependent_variables = alternative_dependent_variables
         self.intercepts = intercepts
         self.parameters = parameters
         self.data = None
 
-        # Ensure all choices have an availability variable
+        # Ensure all alternatives have an availability variable
         self._check_availability()
 
         # Ensure that there are enough intercepts (one fewer than the number of
-        # choices)
+        # alternatives)
         self._check_intercepts()
 
     @classmethod
@@ -93,18 +93,18 @@ class ChoiceModel(object):
             (tuple): A tuple of the arguments requiredby the constructor.
         """
         title = cls._copy_yaml_record('title', model_dict)
-        choices = cls._copy_yaml_record('choices', model_dict)
+        alternatives = cls._copy_yaml_record('alternatives', model_dict)
         choice_column = cls._copy_yaml_record('choice_column', model_dict)
         availability = cls._copy_yaml_record('availability', model_dict)
-        choice_independent_variables = cls._copy_yaml_record(
-            'choice_independent_variables', model_dict)
-        choice_dependent_variables = cls._copy_yaml_record(
-            'choice_dependent_variables', model_dict)
+        alternative_independent_variables = cls._copy_yaml_record(
+            'alternative_independent_variables', model_dict)
+        alternative_dependent_variables = cls._copy_yaml_record(
+            'alternative_dependent_variables', model_dict)
         intercepts = cls._copy_yaml_record('intercepts', model_dict)
         parameters = cls._copy_yaml_record('parameters', model_dict)
 
-        return (title, choices, choice_column, availability,
-                choice_independent_variables, choice_dependent_variables,
+        return (title, alternatives, choice_column, availability,
+                alternative_independent_variables, alternative_dependent_variables,
                 intercepts, parameters)
 
     @staticmethod
@@ -171,13 +171,13 @@ class ChoiceModel(object):
                 raise MissingField(variable, stream)
 
     def _check_availability(self):
-        for choice in self.choices:
+        for choice in self.alternatives:
             if choice not in self.availability:
                 raise UndefinedAvailability(choice)
 
     def _check_intercepts(self):
         n_intercepts = len(self.intercepts)
-        n_required = len(self.choices) - 1
+        n_required = len(self.alternatives) - 1
         if n_intercepts != n_required:
             raise IncorrectNumberOfIntercepts(n_intercepts, n_required)
 
@@ -186,29 +186,29 @@ class ChoiceModel(object):
         Produce a list of all variables in the model, both choice dependent and
         independent.
         """
-        choice_independent = self.choice_independent_variables
-        choice_dependent = list(self.choice_dependent_variables.keys())
-        return choice_independent + choice_dependent
+        alternative_independent = self.alternative_independent_variables
+        alternative_dependent = list(self.alternative_dependent_variables.keys())
+        return alternative_independent + alternative_dependent
 
-    def choice_dependent_variable_fields(self):
+    def alternative_dependent_variable_fields(self):
         """
         Produce a list of all expected fields in the data file corresponding to
         choice dependent variables.
         """
-        choice_dependent = [
-            label for variable in self.choice_dependent_variables.values()
+        alternative_dependent = [
+            label for variable in self.alternative_dependent_variables.values()
             for label in variable.values()
             ]
-        return choice_dependent
+        return alternative_dependent
 
     def all_variable_fields(self):
         """
         Produce a list of all expected fields in the data file corresponding to
         choice dependent or independent variables.
         """
-        choice_independent = self.choice_independent_variables
-        choice_dependent = self.choice_dependent_variable_fields()
-        return choice_independent + choice_dependent
+        alternative_independent = self.alternative_independent_variables
+        alternative_dependent = self.alternative_dependent_variable_fields()
+        return alternative_independent + alternative_dependent
 
     def availability_fields(self):
         """
@@ -216,11 +216,11 @@ class ChoiceModel(object):
         """
         return list(self.availability.values())
 
-    def number_of_choices(self):
+    def number_of_alternatives(self):
         """
-        Determine the number of choices/alternatives in the model
+        Determine the number of alternatives in the model
         """
-        return len(self.choices)
+        return len(self.alternatives)
 
     def number_of_parameters(self, include_intercepts=True):
         """
@@ -240,16 +240,16 @@ class MultinomialLogit(ChoiceModel):
     """
     Multinomial logit choice model class.
     """
-    def __init__(self, title, choices, choice_column, availability,
-                 choice_independent_variables, choice_dependent_variables,
+    def __init__(self, title, alternatives, choice_column, availability,
+                 alternative_independent_variables, alternative_dependent_variables,
                  intercepts, parameters, specification):
-        super().__init__(title, choices, choice_column, availability,
-                         choice_independent_variables,
-                         choice_dependent_variables, intercepts, parameters)
+        super().__init__(title, alternatives, choice_column, availability,
+                         alternative_independent_variables,
+                         alternative_dependent_variables, intercepts, parameters)
 
         # Create utility definitions
         self.specification = {}
-        for choice in self.choices:
+        for choice in self.alternatives:
             if choice in self.intercepts:
                 intercept = self.intercepts[choice]
             else:

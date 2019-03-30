@@ -50,7 +50,7 @@ class TestPylogitLongData():
         assert wide_value == long_value
 
     @pytest.mark.parametrize('observation', [0, 1])
-    def test_choices(self, simple_multinomial_pylogit_interface, observation):
+    def test_alternatives(self, simple_multinomial_pylogit_interface, observation):
         interface = simple_multinomial_pylogit_interface
         wide_data = interface.model.data
         long_data = interface.long_data

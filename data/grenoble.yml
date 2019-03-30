@@ -1,6 +1,6 @@
 title: Grenoble Transport Survey
 
-choices:
+alternatives:
   - public_transport
   - car
   - cycle
@@ -15,7 +15,7 @@ availability:
   walk: avail_walk
   passenger: avail_passenger
 
-choice_independent_variables:
+alternative_independent_variables:
   - head_of_household
   - transit_walk_time
   - car_competition
@@ -23,7 +23,7 @@ choice_independent_variables:
   - female
   - central_zone
   - manual_worker
-choice_dependent_variables:
+alternative_dependent_variables:
   travel_time:
     public_transport: public_transport_time
     car: car_time

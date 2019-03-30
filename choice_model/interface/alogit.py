@@ -84,7 +84,7 @@ class AlogitInterface(Interface):
         full = []
         abbreviations = []
         # Abbreviate choice names
-        for number, choice in enumerate(model.choices, start=1):
+        for number, choice in enumerate(model.alternatives, start=1):
             full.append(choice)
             abbreviations.append(_ALO_LABEL_CHOICE + str(number))
 
@@ -107,7 +107,7 @@ class AlogitInterface(Interface):
 
         # Abbreviate choice dependend variable column labels
         for number, variable in enumerate(
-                model.choice_dependent_variable_fields(),
+                model.alternative_dependent_variable_fields(),
                 start=1
                 ):
             full.append(variable)
@@ -183,18 +183,18 @@ class AlogitInterface(Interface):
             _ALO_COMMAND_COEFFICIENTS,
             *model.parameters + list(model.intercepts.values())
             )
-        # Write alternatives (choices)
-        alo += self._alo_record(_ALO_COMMAND_ALTERNATIVES, *model.choices)
+        # Write alternatives
+        alo += self._alo_record(_ALO_COMMAND_ALTERNATIVES, *model.alternatives)
         # Write data file specification
         alo += self._specify_data_file()
         # Write availability columns
-        for choice in model.choices:
+        for choice in model.alternatives:
             alo += self._alo_record(self._array_record('Avail', choice),
                                     model.availability[choice])
-        # Define choices
-        alo += self._define_choices()
+        # Define alternatives
+        alo += self._define_alternatives()
         # Write choice dependent variable specification
-        for variable, mapping in model.choice_dependent_variables.items():
+        for variable, mapping in model.alternative_dependent_variables.items():
             # Define the choice dependent variable as an array with size
             # equal to the number of alternatives
             alo += self._alo_record(_ALO_COMMAND_ARRAY,
@@ -204,7 +204,7 @@ class AlogitInterface(Interface):
                 alo += self._alo_record(
                     self._array_record(variable, choice), column_label)
         # Write utility specifications for each choice
-        for choice in model.choices:
+        for choice in model.alternatives:
             alo += self._alo_record(self._array_record('Util', choice),
                                     self._utility_string(choice))
         return alo
@@ -244,13 +244,13 @@ class AlogitInterface(Interface):
         return textwrap.wrap(string, width=_MAX_LINE_LENGTH,
                              break_long_words=False)
 
-    def _define_choices(self):
+    def _define_alternatives(self):
         """
-        Create a record to explain the numeric encoding of choices
+        Create a record to explain the numeric encoding of alternatives
         """
         model = self.model
         string = 'choice=recode(' + _ALO_LABEL_CHOICE_COLUMN + ' ' + ', '.join(
-            [self.abbreviate(choice) for choice in model.choices]) + ')'
+            [self.abbreviate(choice) for choice in model.alternatives]) + ')'
         return textwrap.wrap(string, width=_MAX_LINE_LENGTH,
                              break_long_words=False)
 
@@ -260,7 +260,7 @@ class AlogitInterface(Interface):
         """
         model = self.model
         utility = self.model.specification[choice]
-        choice_dependent_variables = model.choice_dependent_variables.keys()
+        alternative_dependent_variables = model.alternative_dependent_variables.keys()
 
         # Intercept term
         if utility.intercept is not None:
@@ -272,7 +272,7 @@ class AlogitInterface(Interface):
         for term in utility.terms:
             variable = term.variable
             # Format choice dependent variables
-            if variable in choice_dependent_variables:
+            if variable in alternative_dependent_variables:
                 utility_string.append(
                     self.abbreviate(term.parameter) + '*'
                     + self.abbreviate(variable) + '('
@@ -294,10 +294,10 @@ class AlogitInterface(Interface):
         """
         model = self.model
 
-        # Encode choices as numbers in new dataframe column
-        number_of_choices = model.number_of_choices()
+        # Encode alternatives as numbers in new dataframe column
+        number_of_alternatives = model.number_of_alternatives()
         choice_encoding = dict(
-            zip(model.choices, np.arange(number_of_choices, dtype=float)+1))
+            zip(model.alternatives, np.arange(number_of_alternatives, dtype=float)+1))
         model.data[_ALO_LABEL_CHOICE_COLUMN] = (
             model.data[model.choice_column].apply(lambda x: choice_encoding[x])
             )
