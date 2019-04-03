@@ -14,8 +14,8 @@ class ChoiceModel(object):
     """
 
     def __init__(self, title, alternatives, choice_column, availability,
-                 alternative_independent_variables, alternative_dependent_variables,
-                 intercepts, parameters):
+                 alternative_independent_variables,
+                 alternative_dependent_variables, intercepts, parameters):
         """
         Choice model constructor.
 
@@ -28,14 +28,15 @@ class ChoiceModel(object):
             availability (dict): A dictionary of labels of the columns defining
                 the availability of each choice. Keys are the names of each
                 choice and the corresponding values are the column labels.
-            alternative_independent_variables (list[str]): A list of variable names
-                used in utility specifications that do not vary with choice.
-            alternative_dependent_variables (dict): A dictionary defining variables
-                that vary with choice. The keys of the dictionary are the names
-                of the variables used in the utility specifications.  The
-                values are themselves dictionaries, with the key specifying the
-                label of the choice and the value being the label of the field
-                in the data file.  For example:
+            alternative_independent_variables (list[str]): A list of variable
+                names used in utility specifications that do not vary with
+                choice.
+            alternative_dependent_variables (dict): A dictionary defining
+                variables that vary with choice. The keys of the dictionary are
+                the names of the variables used in the utility specifications.
+                The values are themselves dictionaries, with the key specifying
+                the label of the choice and the value being the label of the
+                field in the data file.  For example:
                     {'travel_time': {'car': 'car_time',
                                      'bus': 'bus_time'},
                      'cost': {'car': 'cost_car',
@@ -53,7 +54,9 @@ class ChoiceModel(object):
         self.alternatives = alternatives
         self.choice_column = choice_column
         self.availability = availability
-        self.alternative_independent_variables = alternative_independent_variables
+        self.alternative_independent_variables = (
+            alternative_independent_variables
+            )
         self.alternative_dependent_variables = alternative_dependent_variables
         self.intercepts = intercepts
         self.parameters = parameters
@@ -104,8 +107,8 @@ class ChoiceModel(object):
         parameters = cls._copy_yaml_record('parameters', model_dict)
 
         return (title, alternatives, choice_column, availability,
-                alternative_independent_variables, alternative_dependent_variables,
-                intercepts, parameters)
+                alternative_independent_variables,
+                alternative_dependent_variables, intercepts, parameters)
 
     @staticmethod
     def _copy_yaml_record(key, yaml_dict):
@@ -187,7 +190,9 @@ class ChoiceModel(object):
         independent.
         """
         alternative_independent = self.alternative_independent_variables
-        alternative_dependent = list(self.alternative_dependent_variables.keys())
+        alternative_dependent = list(
+            self.alternative_dependent_variables.keys()
+            )
         return alternative_independent + alternative_dependent
 
     def alternative_dependent_variable_fields(self):
@@ -241,11 +246,13 @@ class MultinomialLogit(ChoiceModel):
     Multinomial logit choice model class.
     """
     def __init__(self, title, alternatives, choice_column, availability,
-                 alternative_independent_variables, alternative_dependent_variables,
-                 intercepts, parameters, specification):
+                 alternative_independent_variables,
+                 alternative_dependent_variables, intercepts, parameters,
+                 specification):
         super().__init__(title, alternatives, choice_column, availability,
                          alternative_independent_variables,
-                         alternative_dependent_variables, intercepts, parameters)
+                         alternative_dependent_variables, intercepts,
+                         parameters)
 
         # Create utility definitions
         self.specification = {}
