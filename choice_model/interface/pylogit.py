@@ -36,7 +36,9 @@ class PylogitInterface(Interface):
         # Create mapping from choice strings to integers begining from 1
         number_of_alternatives = model.number_of_alternatives()
         self.choice_encoding = dict(
-            zip(model.alternatives, np.arange(number_of_alternatives, dtype=int)+1))
+            zip(model.alternatives,
+                np.arange(number_of_alternatives, dtype=int)+1)
+            )
 
         self._convert_to_long_format()
         self._create_specification_and_names()

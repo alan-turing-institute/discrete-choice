@@ -260,7 +260,9 @@ class AlogitInterface(Interface):
         """
         model = self.model
         utility = self.model.specification[choice]
-        alternative_dependent_variables = model.alternative_dependent_variables.keys()
+        alternative_dependent_variables = (
+            model.alternative_dependent_variables.keys()
+            )
 
         # Intercept term
         if utility.intercept is not None:
@@ -297,7 +299,9 @@ class AlogitInterface(Interface):
         # Encode alternatives as numbers in new dataframe column
         number_of_alternatives = model.number_of_alternatives()
         choice_encoding = dict(
-            zip(model.alternatives, np.arange(number_of_alternatives, dtype=float)+1))
+            zip(model.alternatives,
+                np.arange(number_of_alternatives, dtype=float)+1)
+            )
         model.data[_ALO_LABEL_CHOICE_COLUMN] = (
             model.data[model.choice_column].apply(lambda x: choice_encoding[x])
             )
