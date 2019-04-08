@@ -81,7 +81,7 @@ class ChoiceModel(object):
             (ChoiceModel): A choice model object corresponding to the
                 definition in the stream.
         """
-        model_dict = yaml.load(stream)
+        model_dict = yaml.load(stream, Loader=yaml.FullLoader)
         return cls(*cls._unpack_yaml(model_dict))
 
     @classmethod
@@ -268,7 +268,7 @@ class MultinomialLogit(ChoiceModel):
 
     @classmethod
     def from_yaml(cls, stream):
-        model_dict = yaml.load(stream)
+        model_dict = yaml.load(stream, Loader=yaml.FullLoader)
         specification = cls._copy_yaml_record('specification', model_dict)
 
         return cls(*super()._unpack_yaml(model_dict), specification)
