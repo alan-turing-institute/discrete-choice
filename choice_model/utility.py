@@ -11,22 +11,23 @@ VariableAndParameter = namedtuple('VariableAndParameter',
 class Utility(object):
     """
     Utility class
+
+    Args:
+        utility_string (str): A string defining the utility function. The
+            utility string has the format "c + p1*v1 + p2*v2 ..." where "c" is
+            the intercept, "p" are parameters and "v" are variables. If there
+            is an intercept it must be the first term. Parameters
+            and variables may occur in any order, but their names must appear
+            in the arguments parameters and variables respectively.
+        variables (list[str]): A list of variables names that may appear in
+            the utility string.
+        intercept (str or None): The intercept variable that will appear
+            in the utility string or None if there isn't one.
+        parameters (list[str]): A list of the parameter names that may
+            appear in the utility string.
     """
 
     def __init__(self, utility_string, variables, intercept, parameters):
-        """
-        Utility constructore
-
-        Args:
-            utility_string (str): A string defining the utility function. The
-                utility string has the following format ...
-            variables (list[str]): A list of variables names that may appear in
-                the utility string.
-            intercept (str or None): The intercept variable that will appear
-                in the utility string or None if there isn't one.
-            parameters (list[str]): A list of the parameter names that may
-                appear in the utility string.
-        """
 
         # Split utility string into terms seperated by '+'
         terms = utility_string.split('+')
@@ -69,8 +70,8 @@ class Utility(object):
                 _e.g._ "param * var" or "param*var".
 
         Returns:
-            variable_and_paramter (list[str]): A list of length two containing
-                the two labels (not sorted).
+            (list[str]): A list of length two containing the two labels (not
+                sorted).
 
         Raises:
             TermNotProduct: Raised when term is not a product of two labels.
@@ -102,8 +103,8 @@ class Utility(object):
             parameters (list[str]): A list of all parameter labels.
 
         Returns:
-            VariableAndParameter: A named tuple with components 'variable' and
-                'parameter' corresponding to the variable and parameter
+            (VariableAndParameter): A named tuple with components 'variable'
+                and 'parameter' corresponding to the variable and parameter
                 respectively.
 
         Raises:
@@ -130,7 +131,7 @@ class Utility(object):
         Produce a list of variables in the utility definition
 
         Returns:
-            list[str]: a list of the variable labels
+            (list[str]): a list of the variable labels
         """
         return [term.variable for term in self.terms]
 
@@ -139,7 +140,7 @@ class Utility(object):
         Produce a list of parameters in the utility definition
 
         Returns:
-            list[str]: a list of the parameter labels
+            (list[str]): a list of the parameter labels
         """
         return [term.parameter for term in self.terms]
 
