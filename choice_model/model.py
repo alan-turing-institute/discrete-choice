@@ -27,7 +27,7 @@ class ChoiceModel(object):
                 will contain the alternatives for each record
             availability (dict): A dictionary of labels of the columns defining
                 the availability of each choice. Keys are the names of each
-                choice and the corresponding values are the column labels.
+                alternative and the corresponding values are the column labels.
             alternative_independent_variables (list[str]): A list of variable
                 names used in utility specifications that do not vary with
                 choice.

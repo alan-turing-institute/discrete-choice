@@ -1,3 +1,4 @@
+biogeme
 numpy
 pandas
 pylogit
