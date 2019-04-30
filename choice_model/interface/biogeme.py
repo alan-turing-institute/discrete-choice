@@ -132,15 +132,15 @@ class BiogemeInterface(Interface):
 
     @requires_estimation
     def parameters(self):
-        return self.results.getEstimatedParameters()['Value'].as_dict()
+        return self.results.getEstimatedParameters()['Value'].to_dict()
 
     @requires_estimation
     def standard_errors(self):
-        return self.results.getEstimatedParameters()['Std err'].as_dict()
+        return self.results.getEstimatedParameters()['Std err'].to_dict()
 
     @requires_estimation
     def t_values(self):
-        return self.results.getEstimatedParameters()['t-test'].as_dict()
+        return self.results.getEstimatedParameters()['t-test'].to_dict()
 
     @requires_estimation
     def estimation_time(self):
