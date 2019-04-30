@@ -126,6 +126,14 @@ class BiogemeInterface(Interface):
     def display_results(self):
         print(self.results.getEstimatedParameters())
 
+    @requires_estimation
+    def null_log_likelihood(self):
+        return self.results.getGeneralStatistics()['Init log likelihood'][0]
+
+    @requires_estimation
+    def final_log_likelihood(self):
+        return self.results.getGeneralStatistics()['Final log likelihood'][0]
+
 
 class cwd_path(object):
     def __init__(self):
