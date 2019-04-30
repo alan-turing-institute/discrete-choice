@@ -115,10 +115,6 @@ class BiogemeInterface(Interface):
         # Call biogeme estimation routine and store results
         self.results = self.biogeme_model.estimate()
 
-        # Get esimation time in seconds
-        delta = self.results.getGeneralStatistics()['Optimization time'][0]
-        self._estimation_time = delta.total_seconds()
-
         # Set estimated flag
         self._estimated = True
 
@@ -133,6 +129,23 @@ class BiogemeInterface(Interface):
     @requires_estimation
     def final_log_likelihood(self):
         return self.results.getGeneralStatistics()['Final log likelihood'][0]
+
+    @requires_estimation
+    def parameters(self):
+        return self.results.getEstimatedParameters()['Value'].as_dict()
+
+    @requires_estimation
+    def standard_errors(self):
+        return self.results.getEstimatedParameters()['Std err'].as_dict()
+
+    @requires_estimation
+    def t_values(self):
+        return self.results.getEstimatedParameters()['t-test'].as_dict()
+
+    @requires_estimation
+    def estimation_time(self):
+        delta = self.results.getGeneralStatistics()['Optimization time'][0]
+        return delta.total_seconds()
 
 
 class cwd_path(object):
