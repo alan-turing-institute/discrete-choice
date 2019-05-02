@@ -55,7 +55,7 @@ class TestBiogemeGrenobleEstimation():
                                   parameter, value):
         interface = grenoble_estimation
         parameters = interface.parameters()
-        assert parameters[parameter] == pytest.approx(value, rel=2.0e-3)
+        assert parameters[parameter] == pytest.approx(value, rel=1.6e-3)
 
 
 class TestPylogitRequiresEstimation():
