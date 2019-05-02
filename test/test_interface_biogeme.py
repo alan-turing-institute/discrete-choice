@@ -57,6 +57,28 @@ class TestBiogemeGrenobleEstimation():
         parameters = interface.parameters()
         assert parameters[parameter] == pytest.approx(value, rel=1.6e-3)
 
+    @pytest.mark.parametrize('parameter,error', [
+        ('cpt', 0.390846),
+        ('ccycle', 0.323384),
+        ('cwalk', 0.314923),
+        ('cpass', 0.571899),
+        ('phead_of_household', 0.236262),
+        ('porigin_walk', 0.001276),
+        ('pcar_competition', 0.350013),
+        ('phas_car', 0.468693),
+        ('pfemale_passenger', 0.333083),
+        ('pfemale_cycle', 0.231491),
+        ('pcentral_zone', 0.461484),
+        ('pmanual_worker', 0.219562),
+        ('ptime', 0.000111),
+        ('pcost', 0.000402),
+        ('pnon_linear', 0.000313)
+        ])
+    def test_standard_errors(self, grenoble_estimation, parameter, error):
+        interface = grenoble_estimation
+        errors = interface.standard_errors()
+        assert errors[parameter] == pytest.approx(error, rel=1.0e-2)
+
 
 class TestPylogitRequiresEstimation():
     @pytest.mark.parametrize('method', [
