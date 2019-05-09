@@ -3,9 +3,11 @@ Routines for creating synthetic models and corresponding data
 """
 
 from .model import MultinomialLogit
+import itertools
 import numpy as np
 import numpy.random as random
 import pandas as pd
+import scipy.stats as stats
 
 
 def synthetic_model(title, number_of_alternatives, number_of_variables):
@@ -80,7 +82,7 @@ def synthetic_data(model, number_of_records):
 
     Args:
         model (ChoiceModel): The choice model object to create synthetic
-            observatiosn for.
+            observations for.
         number_of_records (int): The number of synthetic observations to
             create.
 
@@ -103,12 +105,91 @@ def synthetic_data(model, number_of_records):
 
     # Set all availability columns to 1 (available)
     for column in model.availability_fields():
-        data[column] = np.full(shape=number_of_records,
-                               fill_value=1)
+        data[column] = np.full(shape=number_of_records, fill_value=1)
 
     # Fill all variable columns with uniform random numbers in the range
     # [0,1)
     for column in model.all_variable_fields():
         data[column] = random.random(size=number_of_records)
+
+    return data
+
+
+def synthetic_data2(model, n_observations):
+    """
+    Generate synthetic data for a model.
+
+    Args:
+        model (ChoiceModel): The choice model object to create synthetic
+            observations for.
+        n_observations (int): The number of synthetic observations to create.
+
+    Returns:
+        (DataFrame): A pandas dataframe of synthetic data that can be
+            loaded into model.
+    """
+    # Create dataframe with the necessary column labels
+    data = pd.DataFrame(
+        columns=(model.all_variable_fields() +
+                 model.availability_fields() +
+                 [model.choice_column])
+        )
+
+    n_alternatives = model.number_of_alternatives()
+    n_parameters = model.number_of_parameters(include_intercepts=False)
+    n_variables = model.number_of_variables()
+
+    # Set mean value for all alternative dependent variables
+    mean = [5.]*n_variables
+
+    # Generate a (symmetric) positive semi-definite covariance matrix
+    covariance = random.uniform(
+        -1.0, 1.0, [n_variables, n_variables]
+        )
+    covariance = np.matmul(covariance.T, covariance)
+
+    # Pick variables for each observations from the multivariate gaussian
+    # distribution defined by mean and covariance
+    variables = stats.multivariate_normal.rvs(mean, covariance,
+                                              [n_observations, n_alternatives])
+
+    # Pick parameters for each alternative and variable uniform in the range
+    # [-5, 5]
+    # parameters = random.uniform(-5.0, 5.0, [n_alternatives, n_variables])
+    parameters = np.full(fill_value=2.5, shape=n_parameters)
+    utility = np.zeros([n_observations, n_alternatives])
+
+    # Pick intercepts for each alterntive (except one) uniform in the range
+    # [1,5]
+    intercepts = random.uniform(1.0, 5.0, n_alternatives)
+    intercepts[-1] = 0.0
+
+    # Calculate the 'ideal' utility values for each obsertvation and
+    # alternative, a linear combination of the relevant parameters and
+    # variables
+    for observation, alternative in itertools.product(range(n_observations),
+                                                      range(n_alternatives)):
+        utility[observation, alternative] = (
+                intercepts[alternative]
+                + np.dot(parameters, variables[observation, alternative, :])
+                )
+
+    # Add unknown factor, drawn from the Gumbel distribution, to each utility
+    utility += random.gumbel(size=[n_observations, n_alternatives])
+
+    # Find the choice for each observation, the alternative with the highest
+    # utility
+    choices = utility.argmax(axis=1)
+
+    # Fill dataframe
+    data[model.choice_column] = [model.alternatives[choice]
+                                 for choice in choices]
+    for availability in model.availability_fields():
+        data[availability] = np.full(shape=n_observations, fill_value=1)
+    for i, variable in enumerate(model.alternative_dependent_variables):
+        for j, alternative in enumerate(model.alternatives):
+            data[
+                model.alternative_dependent_variables[variable][alternative]
+                ] = variables[:, j, i]
 
     return data
