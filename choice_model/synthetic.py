@@ -159,19 +159,13 @@ def synthetic_data2(model, n_observations):
     parameters = np.full(fill_value=2.5, shape=n_parameters)
     utility = np.zeros([n_observations, n_alternatives])
 
-    # Pick intercepts for each alterntive (except one) uniform in the range
-    # [1,5]
-    intercepts = random.uniform(1.0, 5.0, n_alternatives)
-    intercepts[-1] = 0.0
-
     # Calculate the 'ideal' utility values for each obsertvation and
     # alternative, a linear combination of the relevant parameters and
     # variables
     for observation, alternative in itertools.product(range(n_observations),
                                                       range(n_alternatives)):
         utility[observation, alternative] = (
-                intercepts[alternative]
-                + np.dot(parameters, variables[observation, alternative, :])
+                np.dot(parameters, variables[observation, alternative, :])
                 )
 
     # Add unknown factor, drawn from the Gumbel distribution, to each utility
