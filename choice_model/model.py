@@ -195,6 +195,14 @@ class ChoiceModel(object):
             )
         return alternative_independent + alternative_dependent
 
+    def number_of_variables(self):
+        """
+        Return the total number of variables (both alternative dependent and
+        independent).
+        """
+        return (len(self.alternative_independent_variables)
+                + len(self.alternative_dependent_variables))
+
     def alternative_dependent_variable_fields(self):
         """
         Produce a list of all expected fields in the data file corresponding to
