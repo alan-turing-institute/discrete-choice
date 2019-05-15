@@ -25,21 +25,21 @@ model = choice_model.synthetic_model(
 
 def scaling(interface, model, records, repeats, interface_args):
     df = pd.DataFrame(columns=records)
-    for number_of_records in records:
-        print('Number of observations: {}'.format(number_of_records))
+    for n_observations in records:
+        print('Number of observations: {}'.format(n_observations))
         estimation_times = []
         for repeat in range(repeats):
             print('\trepeat: {}'.format(repeat))
             data = choice_model.synthetic_data(
                 model=model,
-                number_of_records=number_of_records
+                n_observations=n_observations
                 )
             model.load_data(data)
             solver = interface(model, **interface_args)
             solver.estimate()
 
             estimation_times.append(solver.estimation_time())
-        df[number_of_records] = estimation_times
+        df[n_observations] = estimation_times
     return df
 
 
