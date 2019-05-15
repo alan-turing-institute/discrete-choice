@@ -75,13 +75,36 @@ class TestSyntheticmodel():
 
 
 @pytest.fixture(scope='module')
+def synthetic_data(synthetic_model):
+    data = choice_model.synthetic_data(model=synthetic_model,
+                                       n_observations=5)
+    return data
+
+
+class TestSyntheticData():
+    def test_data(self, synthetic_data):
+        assert isinstance(synthetic_data, pd.DataFrame)
+
+    @pytest.mark.parametrize('column', [
+        'availability1',
+        'availability2',
+        ])
+    def test_availabilities(self, synthetic_data, column):
+        assert all(synthetic_data[column] == 1)
+
+    def test_alternatives(self, synthetic_data, synthetic_model):
+        assert all(synthetic_data['choice'].apply(
+            lambda x: x in synthetic_model.alternatives))
+
+
+@pytest.fixture(scope='module')
 def synthetic_data_uniform(synthetic_model):
     data = choice_model.synthetic_data_uniform(model=synthetic_model,
                                                number_of_records=5)
     return data
 
 
-class TestSyntheticData():
+class TestSyntheticDataUniform():
     def test_data(self, synthetic_data_uniform):
         assert isinstance(synthetic_data_uniform, pd.DataFrame)
 
