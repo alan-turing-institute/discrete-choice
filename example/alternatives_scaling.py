@@ -26,10 +26,10 @@ def create_model(number_of_alternatives):
     return model
 
 
-def create_data(model, number_of_records):
+def create_data(model, n_observations):
     data = choice_model.synthetic_data(
         model=model,
-        number_of_records=number_of_records
+        n_observations=n_observations
         )
     return data
 
@@ -54,7 +54,7 @@ else:
     interface_args = {}
 
 number_of_alternatives = np.arange(5, 55, 5)
-number_of_records = 5000
+n_observations = 5000
 repeats = 10
 
 estimation_times = {}
@@ -64,7 +64,7 @@ for interface in interfaces:
     for n in number_of_alternatives:
         print('number of alternatives: {}'.format(n))
         model = create_model(n)
-        data = create_data(model, number_of_records)
+        data = create_data(model, n_observations)
         model.load_data(data)
 
         df[n] = scaling(
