@@ -26,18 +26,15 @@ def create_model(number_of_alternatives):
     return model
 
 
-def create_data(model, n_observations):
-    data = choice_model.synthetic_data(
-        model=model,
-        n_observations=n_observations
-        )
-    return data
-
-
-def scaling(interface, repeats, interface_args):
+def scaling(interface, model, n_observations, repeats, interface_args):
     estimation_times = []
     for repeat in range(repeats):
         print('\trepeat: {}'.format(repeat))
+        data = choice_model.synthetic_data(
+            model=model,
+            n_observations=n_observations
+            )
+        model.load_data(data)
         solver = interface(model, **interface_args)
         solver.estimate()
 
@@ -64,11 +61,11 @@ for interface in interfaces:
     for n in number_of_alternatives:
         print('number of alternatives: {}'.format(n))
         model = create_model(n)
-        data = create_data(model, n_observations)
-        model.load_data(data)
 
         df[n] = scaling(
             interface,
+            model,
+            n_observations,
             repeats,
             interface_args
             )
