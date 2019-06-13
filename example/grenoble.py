@@ -11,23 +11,16 @@ with open(data_dir+'/grenoble.yml') as model_file,\
     model = choice_model.MultinomialLogit.from_yaml(model_file)
     model.load_data(data_file)
 
-# Create pylogit interface
-pylogit_interface = choice_model.PylogitInterface(model)
-# Estimate model using pylogit
-pylogit_interface.estimate()
-# Print pylogit summary
-pylogit_interface.display_results()
-
-biogeme_interface = choice_model.BiogemeInterface(model)
-biogeme_interface.estimate()
-biogeme_interface.display_results()
-
 if platform.system() == 'Windows':
-    # Create ALOGIT interface
-    alogit_interface = choice_model.AlogitInterface(
-        model,
-        alogit_path=r'D:\Alo45.exe')
-    # Estimate model using ALOGIT
-    alogit_interface.estimate()
-    # Print ALOGIT ouput
-    alogit_interface.display_results()
+    interfaces = [choice_model.AlogitInterface,
+                  choice_model.PylogitInterface
+                  ]
+    interface_args = dict(alogit_path=r'D:\Alo45.exe')
+else:
+    interfaces = [choice_model.PylogitInterface]
+    interface_args = {}
+
+for interface in interfaces:
+    solver = interface(model, **interface_args)
+    solver.estimate()
+    solver.display_results()
