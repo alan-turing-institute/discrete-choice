@@ -13,11 +13,14 @@ with open(data_dir+'/grenoble.yml') as model_file,\
 
 if platform.system() == 'Windows':
     interfaces = [choice_model.AlogitInterface,
+                  choice_model.BiogemeInterface,
                   choice_model.PylogitInterface
                   ]
     interface_args = dict(alogit_path=r'D:\Alo45.exe')
 else:
-    interfaces = [choice_model.PylogitInterface]
+    interfaces = [choice_model.BiogemeInterface,
+                  choice_model.PylogitInterface
+                  ]
     interface_args = {}
 
 for interface in interfaces:
