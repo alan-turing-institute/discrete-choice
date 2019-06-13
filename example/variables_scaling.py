@@ -1,19 +1,9 @@
 #! /usr/bin/env python3
-
-# Add project directory to path
-import os
-import sys
-
-project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-data_dir = os.path.join(project_dir, 'data/')
-sys.path.insert(0, project_dir)
-
-# Import
-import choice_model # noqa
-import matplotlib.pyplot as plt # noqa
-import numpy as np # noqa
-import pandas as pd # noqa
-import platform # noqa
+import choice_model
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import platform
 
 
 # Define the example model
@@ -26,18 +16,15 @@ def create_model(number_of_variables):
     return model
 
 
-def create_data(model, n_observations):
-    data = choice_model.synthetic_data(
-        model=model,
-        n_observations=n_observations
-        )
-    return data
-
-
-def scaling(interface, repeats, interface_args):
+def scaling(interface, model, n_observations, repeats, interface_args):
     estimation_times = []
     for repeat in range(repeats):
         print('\trepeat: {}'.format(repeat))
+        data = choice_model.synthetic_data(
+            model=model,
+            n_observations=n_observations
+            )
+        model.load_data(data)
         solver = interface(model, **interface_args)
         solver.estimate()
 
@@ -70,11 +57,11 @@ for interface in interfaces:
     for n in number_of_variables[interface.name]:
         print('number of variables: {}'.format(n))
         model = create_model(n)
-        data = create_data(model, n_observations)
-        model.load_data(data)
 
         df[n] = scaling(
             interface,
+            model,
+            n_observations,
             repeats,
             interface_args
             )

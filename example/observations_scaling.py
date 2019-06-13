@@ -1,19 +1,9 @@
 #! /usr/bin/env python3
-
-# Add project directory to path
-import os
-import sys
-
-project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-data_dir = os.path.join(project_dir, 'data/')
-sys.path.insert(0, project_dir)
-
-# Import
-import choice_model # noqa
-import matplotlib.pyplot as plt # noqa
-import numpy as np # noqa
-import pandas as pd # noqa
-import platform # noqa
+import choice_model
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import platform
 
 # Define the example model
 model = choice_model.synthetic_model(

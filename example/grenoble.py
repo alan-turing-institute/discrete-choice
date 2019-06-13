@@ -1,20 +1,13 @@
 #! /usr/bin/env python3
-
-# Add project directory to path
+import choice_model
 import os
-import sys
+import platform
 
-project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-data_dir = os.path.join(project_dir, 'data/')
-sys.path.insert(0, project_dir)
-
-# Import
-import choice_model # noqa
-import platform # noqa
+data_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../data'))
 
 # Create model and load data
-with open(data_dir+'grenoble.yml') as model_file,\
-        open(data_dir+'grenoble.csv') as data_file:
+with open(data_dir+'/grenoble.yml') as model_file,\
+        open(data_dir+'/grenoble.csv') as data_file:
     model = choice_model.MultinomialLogit.from_yaml(model_file)
     model.load_data(data_file)
 
@@ -24,6 +17,10 @@ pylogit_interface = choice_model.PylogitInterface(model)
 pylogit_interface.estimate()
 # Print pylogit summary
 pylogit_interface.display_results()
+
+biogeme_interface = choice_model.BiogemeInterface(model)
+biogeme_interface.estimate()
+biogeme_interface.display_results()
 
 if platform.system() == 'Windows':
     # Create ALOGIT interface

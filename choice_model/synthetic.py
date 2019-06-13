@@ -85,7 +85,8 @@ def synthetic_data(model, n_observations):
     where the elements of A are picked from the uniform distribution in the
     range [-1.0, 1.0).
 
-    All parameters are set to 2.5, and intercepts to 0.
+    All parameters are set to -1.5 divided by the number of parameters, and
+    intercepts to 0.
 
     The choice for each observation is the alternative with maximum utility
     plus an unkown factor taken from the Gumbel distribution.
@@ -117,9 +118,9 @@ def synthetic_data(model, n_observations):
     variables = stats.multivariate_normal.rvs(mean, covariance,
                                               [n_observations, n_alternatives])
 
-    # Pick parameters for each alternative and variable uniform in the range
-    # [-5, 5]
-    parameters = np.full(fill_value=2.5, shape=n_parameters)
+    # Set parameters for each alternative
+    parameters = np.full(fill_value=-1.5, shape=n_parameters)
+    parameters = parameters / n_parameters
     utility = np.zeros([n_observations, n_alternatives])
 
     # Calculate the 'ideal' utility values for each obsertvation and
