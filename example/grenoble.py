@@ -23,4 +23,9 @@ else:
 for interface in interfaces:
     solver = interface(model, **interface_args)
     solver.estimate()
-    solver.display_results()
+    print('\n')
+    print(solver.name)
+    print('\tlog-likelihood: {:.3f}'.format(solver.final_log_likelihood()))
+    print('\tparameters:')
+    for parameter, value in sorted(solver.parameters().items()):
+        print('\t\t{:20s} {:0< 6.3g}'.format(parameter, value), sep='')
