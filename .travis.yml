@@ -6,8 +6,9 @@ python:
   - 3.6
   - 3.7
 
-before_script:
-  cd test
+install:
+  - pip install -r requirements.txt
+  - pip install .
 
 script:
-  pytest -v
+  python -m pytest -v
