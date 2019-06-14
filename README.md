@@ -12,6 +12,7 @@ programme at the Alan Turing Institute.
 ## Currently supported back ends
 
 - [ALOGIT](http://www.alogit.com/)
+- [Biogeme](http://biogeme.epfl.ch/)
 - [pylogit](https://github.com/timothyb0912/pylogit)
 
 ## Currently supported models
