@@ -1,9 +1,9 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name="choice_model",
     version="0.1",
-    packages=["choice_model"],
+    packages=find_packages(),
     license="MIT",
     author="Jim Madge",
     url="https://github.com/alan-turing-institute/discrete-choice",
